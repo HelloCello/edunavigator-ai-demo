@@ -1,1607 +1,2672 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>EduNavigator - Salesforce Einstein AI for Education</title>
-	<style>
-    	* {
-        	margin: 0;
-        	padding: 0;
-        	box-sizing: border-box;
-    	}
-
-    	body {
-        	font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        	background-color: #f3f2f2;
-        	color: #080707;
-    	}
-
-    	/* Salesforce Header */
-    	.sf-header {
-        	background-color: #0070d2;
-        	height: 48px;
-        	display: flex;
-        	align-items: center;
-        	padding: 0 16px;
-        	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    	}
-
-    	.sf-logo {
-        	display: flex;
-        	align-items: center;
-        	gap: 12px;
-    	}
-
-    	.einstein-logo {
-        	width: 32px;
-        	height: 32px;
-        	background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>') no-repeat center;
-        	background-size: contain;
-    	}
-
-    	.app-title {
-        	color: white;
-        	font-size: 18px;
-        	font-weight: 700;
-    	}
-
-    	.einstein-badge {
-        	background-color: rgba(255,255,255,0.2);
-        	color: white;
-        	padding: 4px 8px;
-        	border-radius: 4px;
-        	font-size: 12px;
-        	margin-left: 12px;
-    	}
-
-    	/* Tab content */
-    	.tab-content {
-        	display: none;
-    	}
-
-    	.tab-content.active {
-        	display: block;
-    	}
-
-    	/* Salesforce Navigation */
-    	.sf-nav {
-        	background-color: white;
-        	border-bottom: 1px solid #dddbda;
-        	padding: 0 16px;
-    	}
-
-    	.sf-nav-list {
-        	display: flex;
-        	list-style: none;
-        	gap: 24px;
-    	}
-
-    	.sf-nav-item {
-        	padding: 12px 0;
-        	cursor: pointer;
-        	border-bottom: 3px solid transparent;
-        	transition: all 0.2s;
-    	}
-
-    	.sf-nav-item:hover {
-        	color: #0070d2;
-    	}
-
-    	.sf-nav-item.active {
-        	color: #0070d2;
-        	border-bottom-color: #0070d2;
-        	font-weight: 600;
-    	}
-
-    	/* Main Container */
-    	.sf-container {
-        	display: flex;
-        	height: calc(100vh - 96px);
-    	}
-
-    	/* Sidebar */
-    	.sf-sidebar {
-        	width: 220px;
-        	background-color: #fafaf9;
-        	border-right: 1px solid #dddbda;
-        	padding: 16px 0;
-    	}
-
-    	.sf-sidebar-item {
-        	padding: 8px 16px;
-        	cursor: pointer;
-        	display: flex;
-        	align-items: center;
-        	gap: 8px;
-        	transition: background-color 0.2s;
-    	}
-
-    	.sf-sidebar-item:hover {
-        	background-color: #e5e5e4;
-    	}
-
-    	.sf-sidebar-item.active {
-        	background-color: #e5e5e4;
-        	border-left: 3px solid #0070d2;
-        	margin-left: -3px;
-        	padding-left: 19px;
-    	}
-
-    	/* Content Area */
-    	.sf-content {
-        	flex: 1;
-        	padding: 24px;
-        	overflow-y: auto;
-    	}
-
-    	/* Page Header */
-    	.page-header {
-        	display: flex;
-        	justify-content: space-between;
-        	align-items: center;
-        	margin-bottom: 24px;
-    	}
-
-    	.page-header-title {
-        	display: flex;
-        	align-items: center;
-        	gap: 12px;
-    	}
-
-    	.page-header h1 {
-        	font-size: 24px;
-        	font-weight: 700;
-        	color: #080707;
-    	}
-
-    	/* Einstein AI Box */
-    	.einstein-box {
-        	background: linear-gradient(135deg, #0070d2 0%, #00a1e0 100%);
-        	color: white;
-        	padding: 16px;
-        	border-radius: 8px;
-        	margin-bottom: 24px;
-    	}
-
-    	.einstein-box h3 {
-        	display: flex;
-        	align-items: center;
-        	gap: 8px;
-        	margin-bottom: 8px;
-    	}
-
-    	/* Cards */
-    	.sf-card {
-        	background-color: white;
-        	border-radius: 8px;
-        	box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        	margin-bottom: 16px;
-        	border: 1px solid #dddbda;
-    	}
-
-    	.sf-card-header {
-        	padding: 16px;
-        	border-bottom: 1px solid #dddbda;
-        	font-weight: 600;
-        	display: flex;
-        	justify-content: space-between;
-        	align-items: center;
-    	}
-
-    	.sf-card-body {
-        	padding: 16px;
-    	}
-
-    	/* Buttons */
-    	.sf-button {
-        	padding: 8px 16px;
-        	border-radius: 4px;
-        	border: none;
-        	font-size: 14px;
-        	font-weight: 600;
-        	cursor: pointer;
-        	transition: all 0.2s;
-        	margin-right: 8px;
-    	}
-
-    	.sf-button-primary {
-        	background-color: #0070d2;
-        	color: white;
-    	}
-
-    	.sf-button-primary:hover {
-        	background-color: #005fb2;
-    	}
-
-    	.sf-button-secondary {
-        	background-color: white;
-        	color: #0070d2;
-        	border: 1px solid #0070d2;
-    	}
-
-    	.sf-button-secondary:hover {
-        	background-color: #f4f6f9;
-    	}
-
-    	/* Response buttons */
-    	.response-options {
-        	display: flex;
-        	flex-wrap: wrap;
-        	gap: 8px;
-        	margin-top: 16px;
-    	}
-
-    	.response-button {
-        	background-color: #e1f3ff;
-        	color: #0070d2;
-        	padding: 8px 16px;
-        	border: 1px solid #0070d2;
-        	border-radius: 20px;
-        	cursor: pointer;
-        	font-size: 14px;
-        	transition: all 0.2s;
-    	}
-
-    	.response-button:hover {
-        	background-color: #0070d2;
-        	color: white;
-    	}
-
-    	/* Prompt Templates */
-    	.prompt-template {
-        	background-color: #f4f6f9;
-        	border: 1px solid #dddbda;
-        	border-radius: 8px;
-        	padding: 16px;
-        	margin-bottom: 12px;
-        	cursor: pointer;
-        	transition: all 0.2s;
-    	}
-
-    	.prompt-template:hover {
-        	background-color: #e5e5e4;
-        	border-color: #0070d2;
-    	}
-
-    	.prompt-template-header {
-        	display: flex;
-        	justify-content: space-between;
-        	align-items: center;
-        	margin-bottom: 8px;
-    	}
-
-    	.prompt-template-title {
-        	font-weight: 600;
-        	color: #0070d2;
-    	}
-
-    	.prompt-template-tag {
-        	background-color: #e1f3ff;
-        	color: #0070d2;
-        	padding: 4px 8px;
-        	border-radius: 4px;
-        	font-size: 12px;
-    	}
-
-    	.prompt-template-description {
-        	color: #706e6b;
-        	font-size: 14px;
-        	margin-bottom: 8px;
-    	}
-
-    	.prompt-template-example {
-        	background-color: white;
-        	padding: 12px;
-        	border-radius: 4px;
-        	font-family: monospace;
-        	font-size: 13px;
-        	color: #2e2e2e;
-        	border: 1px solid #dddbda;
-    	}
-
-    	/* Form Elements */
-    	.sf-form-element {
-        	margin-bottom: 16px;
-    	}
-
-    	.sf-form-label {
-        	display: block;
-        	font-weight: 600;
-        	margin-bottom: 4px;
-        	color: #3e3e3c;
-    	}
-
-    	.sf-form-input {
-        	width: 100%;
-        	padding: 8px 12px;
-        	border: 1px solid #dddbda;
-        	border-radius: 4px;
-        	font-size: 14px;
-    	}
-
-    	.sf-form-input:focus {
-        	outline: none;
-        	border-color: #0070d2;
-        	box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.1);
-    	}
-
-    	/* Data Table */
-    	.sf-data-table {
-        	width: 100%;
-        	border-collapse: collapse;
-        	border: 1px solid #dddbda;
-    	}
-
-    	.sf-data-table th {
-        	background-color: #f4f6f9;
-        	padding: 8px 12px;
-        	text-align: left;
-        	font-weight: 600;
-        	border-bottom: 1px solid #dddbda;
-    	}
-
-    	.sf-data-table td {
-        	padding: 8px 12px;
-        	border-bottom: 1px solid #dddbda;
-    	}
-
-    	/* Chat Interface */
-    	.einstein-chat {
-        	height: 600px;
-        	display: flex;
-        	flex-direction: column;
-        	border: 1px solid #dddbda;
-        	border-radius: 8px;
-        	overflow: hidden;
-    	}
-
-    	.chat-header {
-        	background-color: #0070d2;
-        	color: white;
-        	padding: 12px 16px;
-        	display: flex;
-        	align-items: center;
-        	gap: 8px;
-    	}
-
-    	.chat-messages {
-        	flex: 1;
-        	padding: 16px;
-        	overflow-y: auto;
-        	background-color: #f9f9f9;
-    	}
-
-    	.chat-message {
-        	display: flex;
-        	gap: 12px;
-        	margin-bottom: 16px;
-    	}
-
-    	.message-avatar {
-        	width: 36px;
-        	height: 36px;
-        	border-radius: 50%;
-        	display: flex;
-        	align-items: center;
-        	justify-content: center;
-        	font-weight: 600;
-        	flex-shrink: 0;
-    	}
-
-    	.einstein-avatar {
-        	background-color: #0070d2;
-        	color: white;
-    	}
-
-    	.user-avatar {
-        	background-color: #747474;
-        	color: white;
-    	}
-
-    	.message-content {
-        	background-color: white;
-        	padding: 12px;
-        	border-radius: 8px;
-        	flex: 1;
-        	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    	}
-
-    	.chat-input-area {
-        	padding: 16px;
-        	background-color: white;
-        	border-top: 1px solid #dddbda;
-    	}
-
-    	.chat-input-wrapper {
-        	display: flex;
-        	gap: 12px;
-    	}
-
-    	.template-pills {
-        	display: flex;
-        	flex-wrap: wrap;
-        	gap: 8px;
-        	margin-bottom: 12px;
-    	}
-
-    	.template-pill {
-        	background-color: #e1f3ff;
-        	color: #0070d2;
-        	padding: 6px 12px;
-        	border-radius: 16px;
-        	font-size: 12px;
-        	cursor: pointer;
-        	border: 1px solid transparent;
-        	transition: all 0.2s;
-    	}
-
-    	.template-pill:hover {
-        	background-color: #b9e0ff;
-        	border-color: #0070d2;
-    	}
-
-    	/* Loading Animation */
-    	.einstein-thinking {
-        	display: flex;
-        	align-items: center;
-        	gap: 8px;
-        	color: #706e6b;
-        	font-style: italic;
-    	}
-
-    	.thinking-dots {
-        	display: flex;
-        	gap: 4px;
-    	}
-
-    	.thinking-dot {
-        	width: 8px;
-        	height: 8px;
-        	background-color: #0070d2;
-        	border-radius: 50%;
-        	animation: pulse 1.5s infinite;
-    	}
-
-    	.thinking-dot:nth-child(2) {
-        	animation-delay: 0.2s;
-    	}
-
-    	.thinking-dot:nth-child(3) {
-        	animation-delay: 0.4s;
-    	}
-
-    	@keyframes pulse {
-        	0%, 100% { opacity: 0.3; transform: scale(0.8); }
-        	50% { opacity: 1; transform: scale(1); }
-    	}
-
-    	/* Curriculum Builder */
-    	.curriculum-form {
-        	display: grid;
-        	grid-template-columns: repeat(2, 1fr);
-        	gap: 24px;
-    	}
-
-    	.curriculum-preview {
-        	background-color: #f4f6f9;
-        	border: 1px solid #dddbda;
-        	border-radius: 8px;
-        	padding: 16px;
-        	margin-top: 24px;
-    	}
-
-    	.curriculum-section {
-        	margin-bottom: 24px;
-    	}
-
-    	.curriculum-section h3 {
-        	color: #0070d2;
-        	margin-bottom: 12px;
-    	}
-
-    	/* Template Grid */
-    	.template-grid {
-        	display: grid;
-        	grid-template-columns: repeat(2, 1fr);
-        	gap: 16px;
-        	margin: 16px 0;
-    	}
-
-    	.template-card {
-        	background-color: #f4f6f9;
-        	border: 1px solid #dddbda;
-        	border-radius: 8px;
-        	padding: 16px;
-        	cursor: pointer;
-        	transition: all 0.2s;
-    	}
-
-    	.template-card:hover {
-        	border-color: #0070d2;
-        	background-color: #e5e5e4;
-    	}
-
-    	.template-card h4 {
-        	color: #0070d2;
-        	margin-bottom: 8px;
-    	}
-
-    	.template-card p {
-        	font-size: 14px;
-        	color: #706e6b;
-    	}
-
-    	/* Standards */
-    	.standards-grid {
-        	display: grid;
-        	grid-template-columns: repeat(3, 1fr);
-        	gap: 16px;
-        	margin-top: 24px;
-    	}
-
-    	.standard-card {
-        	background-color: white;
-        	border: 1px solid #dddbda;
-        	border-radius: 8px;
-        	padding: 16px;
-        	transition: all 0.2s;
-        	cursor: pointer;
-    	}
-
-    	.standard-card:hover {
-        	border-color: #0070d2;
-        	box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    	}
-
-    	.standard-tag {
-        	display: inline-block;
-        	background-color: #e1f3ff;
-        	color: #0070d2;
-        	padding: 4px 8px;
-        	border-radius: 4px;
-        	font-size: 12px;
-        	margin-right: 8px;
-        	margin-bottom: 8px;
-    	}
-
-    	/* Setup Progress */
-    	.setup-progress {
-        	background-color: #f4f6f9;
-        	padding: 16px;
-        	border-radius: 8px;
-        	margin-bottom: 24px;
-    	}
-
-    	.progress-bar {
-        	width: 100%;
-        	height: 8px;
-        	background-color: #dddbda;
-        	border-radius: 4px;
-        	overflow: hidden;
-        	margin-bottom: 8px;
-    	}
-
-    	.progress-fill {
-        	height: 100%;
-        	background-color: #0070d2;
-        	width: 0%;
-        	transition: width 0.5s ease;
-    	}
-
-    	.setup-steps {
-        	display: flex;
-        	justify-content: space-between;
-        	margin-top: 16px;
-    	}
-
-    	.setup-step {
-        	display: flex;
-        	align-items: center;
-        	gap: 8px;
-    	}
-
-    	.step-circle {
-        	width: 24px;
-        	height: 24px;
-        	border-radius: 50%;
-        	background-color: #dddbda;
-        	display: flex;
-        	align-items: center;
-        	justify-content: center;
-        	font-size: 12px;
-        	font-weight: 600;
-    	}
-
-    	.step-circle.active {
-        	background-color: #0070d2;
-        	color: white;
-    	}
-
-    	.step-circle.completed {
-        	background-color: #4bca81;
-        	color: white;
-    	}
-
-    	/* Publishing Options */
-    	.publish-options {
-        	display: grid;
-        	grid-template-columns: repeat(3, 1fr);
-        	gap: 16px;
-        	margin-top: 24px;
-    	}
-
-    	.publish-option {
-        	text-align: center;
-        	padding: 24px;
-        	border: 2px solid #dddbda;
-        	border-radius: 8px;
-        	cursor: pointer;
-        	transition: all 0.2s;
-    	}
-
-    	.publish-option:hover {
-        	border-color: #0070d2;
-        	background-color: #f4f6f9;
-    	}
-
-    	.publish-option-icon {
-        	font-size: 48px;
-        	margin-bottom: 12px;
-    	}
-
-    	.publish-option h4 {
-        	margin-bottom: 8px;
-    	}
-
-    	.publish-option p {
-        	color: #706e6b;
-        	font-size: 14px;
-    	}
-
-    	.success-message {
-        	background-color: #d4edda;
-        	color: #155724;
-        	padding: 12px;
-        	border-radius: 4px;
-        	margin-top: 16px;
-        	display: none;
-    	}
-	</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduNavigator - Salesforce Einstein AI for Education</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Salesforce Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f3f2f2;
+            color: #080707;
+        }
+
+        /* Salesforce Header */
+        .sf-header {
+            background-color: #0070d2;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sf-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .einstein-logo {
+            width: 32px;
+            height: 32px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>') no-repeat center;
+            background-size: contain;
+        }
+
+        .app-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .einstein-badge {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 12px;
+        }
+
+        /* Tab content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Salesforce Navigation */
+        .sf-nav {
+            background-color: white;
+            border-bottom: 1px solid #dddbda;
+            padding: 0 16px;
+        }
+
+        .sf-nav-list {
+            display: flex;
+            list-style: none;
+            gap: 24px;
+        }
+
+        .sf-nav-item {
+            padding: 12px 0;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sf-nav-item:hover {
+            color: #0070d2;
+        }
+
+        .sf-nav-item.active {
+            color: #0070d2;
+            border-bottom-color: #0070d2;
+            font-weight: 600;
+        }
+
+        /* Main Container */
+        .sf-container {
+            display: flex;
+            height: calc(100vh - 96px);
+        }
+
+        /* Sidebar */
+        .sf-sidebar {
+            width: 220px;
+            background-color: #fafaf9;
+            border-right: 1px solid #dddbda;
+            padding: 16px 0;
+        }
+
+        .sf-sidebar-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .sf-sidebar-item:hover {
+            background-color: #e5e5e4;
+        }
+
+        .sf-sidebar-item.active {
+            background-color: #e5e5e4;
+            border-left: 3px solid #0070d2;
+            margin-left: -3px;
+            padding-left: 19px;
+        }
+
+        /* Content Area */
+        .sf-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #080707;
+        }
+
+        /* Einstein AI Box */
+        .einstein-box {
+            background: linear-gradient(135deg, #0070d2 0%, #00a1e0 100%);
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .einstein-box h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Cards */
+        .sf-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 16px;
+            border: 1px solid #dddbda;
+        }
+
+        .sf-card-header {
+            padding: 16px;
+            border-bottom: 1px solid #dddbda;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sf-card-body {
+            padding: 16px;
+        }
+
+        /* Buttons */
+        .sf-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 8px;
+        }
+
+        .sf-button-primary {
+            background-color: #0070d2;
+            color: white;
+        }
+
+        .sf-button-primary:hover {
+            background-color: #005fb2;
+        }
+
+        .sf-button-secondary {
+            background-color: white;
+            color: #0070d2;
+            border: 1px solid #0070d2;
+        }
+
+        .sf-button-secondary:hover {
+            background-color: #f4f6f9;
+        }
+
+        /* Response buttons */
+        .response-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .response-button {
+            background-color: #e1f3ff;
+            color: #0070d2;
+            padding: 8px 16px;
+            border: 1px solid #0070d2;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .response-button:hover {
+            background-color: #0070d2;
+            color: white;
+        }
+
+        /* Prompt Templates */
+        .prompt-template {
+            background-color: #f4f6f9;
+            border: 1px solid #dddbda;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prompt-template:hover {
+            background-color: #e5e5e4;
+            border-color: #0070d2;
+        }
+
+        .prompt-template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .prompt-template-title {
+            font-weight: 600;
+            color: #0070d2;
+        }
+
+        .prompt-template-tag {
+            background-color: #e1f3ff;
+            color: #0070d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .prompt-template-description {
+            color: #706e6b;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .prompt-template-example {
+            background-color: white;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #2e2e2e;
+            border: 1px solid #dddbda;
+        }
+
+        /* Form Elements */
+        .sf-form-element {
+            margin-bottom: 16px;
+        }
+
+        .sf-form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #3e3e3c;
+        }
+
+        .sf-form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .sf-form-input:focus {
+            outline: none;
+            border-color: #0070d2;
+            box-shadow: 0 0 0 3px rgba(0, 112, 210, 0.1);
+        }
+
+        /* Data Table */
+        .sf-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #dddbda;
+        }
+
+        .sf-data-table th {
+            background-color: #f4f6f9;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        .sf-data-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #dddbda;
+        }
+
+        /* Chat Interface */
+        .einstein-chat {
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #dddbda;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #0070d2;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .einstein-avatar {
+            background-color: #0070d2;
+            color: white;
+        }
+
+        .user-avatar {
+            background-color: #747474;
+            color: white;
+        }
+
+        .message-content {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            flex: 1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            background-color: white;
+            border-top: 1px solid #dddbda;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .template-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .template-pill {
+            background-color: #e1f3ff;
+            color: #0070d2;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .template-pill:hover {
+            background-color: #b9e0ff;
+            border-color: #0070d2;
+        }
+
+        /* Loading Animation */
+        .einstein-thinking {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #706e6b;
+            font-style: italic;
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #0070d2;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .thinking-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Curriculum Builder */
+        .curriculum-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .curriculum-preview {
+            background-color: #f4f6f9;
+            border: 1px solid #dddbda;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+
+        .curriculum-section {
+            margin-bottom: 24px;
+        }
+
+        .curriculum-section h3 {
+            color: #0070d2;
+            margin-bottom: 12px;
+        }
+
+        /* Template Grid */
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .template-card {
+            background-color: #f4f6f9;
+            border: 1px solid #dddbda;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-card:hover {
+            border-color: #0070d2;
+            background-color: #e5e5e4;
+        }
+
+        .template-card h4 {
+            color: #0070d2;
+            margin-bottom: 8px;
+        }
+
+        .template-card p {
+            font-size: 14px;
+            color: #706e6b;
+        }
+
+        /* Standards */
+        .standards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .standard-card {
+            background-color: white;
+            border: 1px solid #dddbda;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .standard-card:hover {
+            border-color: #0070d2;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .standard-tag {
+            display: inline-block;
+            background-color: #e1f3ff;
+            color: #0070d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Setup Progress */
+        .setup-progress {
+            background-color: #f4f6f9;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #dddbda;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #0070d2;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .setup-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+
+        .setup-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #dddbda;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .step-circle.active {
+            background-color: #0070d2;
+            color: white;
+        }
+
+        .step-circle.completed {
+            background-color: #4bca81;
+            color: white;
+        }
+
+        /* Publishing Options */
+        .publish-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .publish-option {
+            text-align: center;
+            padding: 24px;
+            border: 2px solid #dddbda;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .publish-option:hover {
+            border-color: #0070d2;
+            background-color: #f4f6f9;
+        }
+
+        .publish-option-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .publish-option h4 {
+            margin-bottom: 8px;
+        }
+
+        .publish-option p {
+            color: #706e6b;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 16px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-	<!-- Salesforce Header -->
-	<header class="sf-header">
-    	<div class="sf-logo">
-        	<div class="einstein-logo">🧠</div>
-        	<div class="app-title">EduNavigator</div>
-        	<div class="einstein-badge">Einstein AI</div>
-    	</div>
-	</header>
+    <!-- Salesforce Header -->
+    <header class="sf-header">
+        <div class="sf-logo">
+            <div class="einstein-logo">🧠</div>
+            <div class="app-title">EduNavigator</div>
+            <div class="einstein-badge">Einstein AI</div>
+        </div>
+    </header>
 
-	<!-- Salesforce Navigation -->
-	<nav class="sf-nav">
-    	<ul class="sf-nav-list">
-        	<li class="sf-nav-item active" onclick="switchTab('home')">Home</li>
-        	<li class="sf-nav-item" onclick="switchTab('prompt-templates')">Prompt Templates</li>
-        	<li class="sf-nav-item" onclick="switchTab('curriculum-builder')">Curriculum Builder</li>
-        	<li class="sf-nav-item" onclick="switchTab('setup')">Setup Assistant</li>
-        	<li class="sf-nav-item" onclick="switchTab('chat')">Einstein Chat</li>
-        	<li class="sf-nav-item" onclick="switchTab('publish')">Publish & Deploy</li>
-    	</ul>
-	</nav>
+    <!-- Salesforce Navigation -->
+    <nav class="sf-nav">
+        <ul class="sf-nav-list">
+            <li class="sf-nav-item active" onclick="switchTab('home', this)">Home</li>
+            <li class="sf-nav-item" onclick="switchTab('prompt-templates', this)">Prompt Templates</li>
+            <li class="sf-nav-item" onclick="switchTab('curriculum-builder', this)">Curriculum Builder</li>
+            <li class="sf-nav-item" onclick="switchTab('setup', this)">Setup Assistant</li>
+            <li class="sf-nav-item" onclick="switchTab('chat', this)">Einstein Chat</li>
+            <li class="sf-nav-item" onclick="switchTab('publish', this)">Publish & Deploy</li>
+        </ul>
+    </nav>
 
-	<!-- Main Container -->
-	<div class="sf-container">
-    	<!-- Sidebar -->
-    	<aside class="sf-sidebar">
-        	<div class="sf-sidebar-item active" onclick="showContent('overview')">
-            	<span>📊</span> Overview
-        	</div>
-        	<div class="sf-sidebar-item" onclick="showContent('templates')">
-            	<span>📝</span> Templates
-        	</div>
-        	<div class="sf-sidebar-item" onclick="showContent('standards')">
-            	<span>📚</span> Standards
-        	</div>
-        	<div class="sf-sidebar-item" onclick="showContent('students')">
-            	<span>👥</span> Students
-        	</div>
-        	<div class="sf-sidebar-item" onclick="showContent('analytics')">
-            	<span>📈</span> Analytics
-        	</div>
-        	<div class="sf-sidebar-item" onclick="showContent('settings')">
-            	<span>⚙️</span> Settings
-        	</div>
-    	</aside>
+    <!-- Main Container -->
+    <div class="sf-container">
+        <!-- Sidebar -->
+        <aside class="sf-sidebar">
+            <div class="sf-sidebar-item active" onclick="showContent('overview', this)">
+                <span>📊</span> Overview
+            </div>
+            <div class="sf-sidebar-item" onclick="showContent('templates', this)">
+                <span>📝</span> Templates
+            </div>
+            <div class="sf-sidebar-item" onclick="showContent('standards', this)">
+                <span>📚</span> Standards
+            </div>
+            <div class="sf-sidebar-item" onclick="showContent('students', this)">
+                <span>👥</span> Students
+            </div>
+            <div class="sf-sidebar-item" onclick="showContent('analytics', this)">
+                <span>📈</span> Analytics
+            </div>
+            <div class="sf-sidebar-item" onclick="showContent('settings', this)">
+                <span>⚙️</span> Settings
+            </div>
+        </aside>
 
-    	<!-- Content Area -->
-    	<main class="sf-content">
-        	<!-- Home Tab -->
-        	<div id="home-content" class="tab-content active">
-            	<div class="page-header">
-                	<div class="page-header-title">
-                    	<h1>EduNavigator Einstein AI</h1>
-                    	<div class="einstein-badge">Powered by Salesforce Einstein</div>
-                	</div>
-                	<button class="sf-button sf-button-primary" onclick="switchTab('curriculum-builder')">New Curriculum</button>
-            	</div>
+        <!-- Content Area -->
+        <main class="sf-content">
+            <!-- Home Tab -->
+            <div id="home-content" class="tab-content active">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>EduNavigator Einstein AI</h1>
+                        <div class="einstein-badge">Powered by Salesforce Einstein</div>
+                    </div>
+                    <button class="sf-button sf-button-primary" onclick="switchTab('curriculum-builder', document.querySelector('.sf-nav-item:nth-child(3)'))">New Curriculum</button>
+                </div>
 
-            	<div class="einstein-box">
-                	<h3>🧠 Einstein AI Recommendations</h3>
-                	<p>Based on your recent activity, here are personalized curriculum suggestions for your students.</p>
-            	</div>
+                <div class="einstein-box">
+                    <h3>🧠 Einstein AI Recommendations</h3>
+                    <p>Based on your recent activity, here are personalized curriculum suggestions for your students.</p>
+                </div>
 
-            	<div class="sf-card">
-                	<div class="sf-card-header">
-                    	Recent Curricula
-                	</div>
-                	<div class="sf-card-body">
-                    	<table class="sf-data-table">
-                        	<thead>
-                            	<tr>
-                                	<th>Student Name</th>
-                                	<th>Grade Level</th>
-                                	<th>Subject</th>
-                                	<th>Standards</th>
-                                	<th>Last Modified</th>
-                                	<th>Status</th>
-                            	</tr>
-                        	</thead>
-                        	<tbody>
-                            	<tr>
-                                	<td>Emma Johnson</td>
-                                	<td>5th Grade</td>
-                                	<td>Mathematics</td>
-                                	<td><span class="standard-tag">CCSS.MATH.5.NF.A.1</span></td>
-                                	<td>May 7, 2025</td>
-                                	<td><span style="color: #4bca81;">Active</span></td>
-                            	</tr>
-                            	<tr>
-                                	<td>Michael Chen</td>
-                                	<td>7th Grade</td>
-                                	<td>Science</td>
-                                	<td><span class="standard-tag">NGSS MS-LS1-5</span></td>
-                                	<td>May 5, 2025</td>
-                                	<td><span style="color: #4bca81;">Active</span></td>
-                            	</tr>
-                        	</tbody>
-                    	</table>
-                	</div>
-            	</div>
-        	</div>
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Recent Curricula
+                    </div>
+                    <div class="sf-card-body">
+                        <table class="sf-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Grade Level</th>
+                                    <th>Subject</th>
+                                    <th>Standards</th>
+                                    <th>Last Modified</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Emma Johnson</td>
+                                    <td>5th Grade</td>
+                                    <td>Mathematics</td>
+                                    <td><span class="standard-tag">CCSS.MATH.5.NF.A.1</span></td>
+                                    <td>May 7, 2025</td>
+                                    <td><span style="color: #4bca81;">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Chen</td>
+                                    <td>7th Grade</td>
+                                    <td>Science</td>
+                                    <td><span class="standard-tag">NGSS MS-LS1-5</span></td>
+                                    <td>May 5, 2025</td>
+                                    <td><span style="color: #4bca81;">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-        	<!-- Prompt Templates Tab -->
-        	<div id="prompt-templates-content" class="tab-content">
-            	<div class="page-header">
-                	<div class="page-header-title">
-                    	<h1>Prompt Templates Library</h1>
-                	</div>
-                	<button class="sf-button sf-button-primary" onclick="showCreateTemplateModal()">Create Template</button>
-            	</div>
+            <!-- Prompt Templates Tab -->
+            <div id="prompt-templates-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Prompt Templates Library</h1>
+                    </div>
+                    <button class="sf-button sf-button-primary" onclick="showCreateTemplateModal()">Create Template</button>
+                </div>
 
-            	<div class="einstein-box">
-                	<h3>🎯 Quick Start Templates</h3>
-                	<p>Use these pre-built templates to quickly generate curriculum for common student profiles and learning needs.</p>
-            	</div>
+                <div class="einstein-box">
+                    <h3>🎯 Quick Start Templates</h3>
+                    <p>Use these pre-built templates to quickly generate curriculum for common student profiles and learning needs.</p>
+                </div>
 
-            	<div class="sf-card">
-                	<div class="sf-card-header">
-                    	Most Used Templates
-                	</div>
-                	<div class="sf-card-body">
-                    	<div class="prompt-template" onclick="useTemplate(this)">
-                        	<div class="prompt-template-header">
-                            	<span class="prompt-template-title">ADHD Elementary Math</span>
-                            	<span class="prompt-template-tag">High Usage</span>
-                        	</div>
-                        	<div class="prompt-template-description">
-                            	For elementary students with ADHD needing structured math lessons with movement breaks and visual supports.
-                        	</div>
-                        	<div class="prompt-template-example">
-                            	"Create a 3rd grade math lesson on multiplication for a student with ADHD. Include movement breaks every 15 minutes, visual aids, and hands-on manipulatives. Align with Common Core standard CCSS.MATH.CONTENT.3.OA.A.1."
-                        	</div>
-                    	</div>
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Most Used Templates
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="prompt-template" onclick="useTemplate(this)">
+                            <div class="prompt-template-header">
+                                <span class="prompt-template-title">ADHD Elementary Math</span>
+                                <span class="prompt-template-tag">High Usage</span>
+                            </div>
+                            <div class="prompt-template-description">
+                                For elementary students with ADHD needing structured math lessons with movement breaks and visual supports.
+                            </div>
+                            <div class="prompt-template-example">
+                                "Create a 3rd grade math lesson on multiplication for a student with ADHD. Include movement breaks every 15 minutes, visual aids, and hands-on manipulatives. Align with Common Core standard CCSS.MATH.CONTENT.3.OA.A.1."
+                            </div>
+                        </div>
 
-                    	<div class="prompt-template" onclick="useTemplate(this)">
-                        	<div class="prompt-template-header">
-                            	<span class="prompt-template-title">Dyslexia Reading Support</span>
-                            	<span class="prompt-template-tag">IEP Support</span>
-                        	</div>
-                        	<div class="prompt-template-description">
-                            	Specialized reading curriculum for students with dyslexia, incorporating Orton-Gillingham methods.
-                        	</div>
-                        	<div class="prompt-template-example">
-                            	"Design a 4th grade reading lesson for a student with dyslexia. Use Orton-Gillingham approach, include phonemic awareness activities, and provide text-to-speech accommodations. Must align with NY state reading standards."
-                        	</div>
-                    	</div>
+                        <div class="prompt-template" onclick="useTemplate(this)">
+                            <div class="prompt-template-header">
+                                <span class="prompt-template-title">Dyslexia Reading Support</span>
+                                <span class="prompt-template-tag">IEP Support</span>
+                            </div>
+                            <div class="prompt-template-description">
+                                Specialized reading curriculum for students with dyslexia, incorporating Orton-Gillingham methods.
+                            </div>
+                            <div class="prompt-template-example">
+                                "Design a 4th grade reading lesson for a student with dyslexia. Use Orton-Gillingham approach, include phonemic awareness activities, and provide text-to-speech accommodations. Must align with NY state reading standards."
+                            </div>
+                        </div>
 
-                    	<div class="prompt-template" onclick="useTemplate(this)">
-                        	<div class="prompt-template-header">
-                            	<span class="prompt-template-title">NY State Standards Template</span>
-                            	<span class="prompt-template-tag">New York</span>
-                        	</div>
-                        	<div class="prompt-template-description">
-                            	Template specifically designed for New York State Learning Standards across all grade levels.
-                        	</div>
-                        	<div class="prompt-template-example">
-                            	"Create a lesson plan aligned with New York State Learning Standards for [GRADE] [SUBJECT]. Include Next Generation Learning Standards and ensure all activities meet NYSED requirements."
-                        	</div>
-                    	</div>
-                	</div>
-            	</div>
-        	</div>
+                        <div class="prompt-template" onclick="useTemplate(this)">
+                            <div class="prompt-template-header">
+                                <span class="prompt-template-title">NY State Standards Template</span>
+                                <span class="prompt-template-tag">New York</span>
+                            </div>
+                            <div class="prompt-template-description">
+                                Template specifically designed for New York State Learning Standards across all grade levels.
+                            </div>
+                            <div class="prompt-template-example">
+                                "Create a lesson plan aligned with New York State Learning Standards for [GRADE] [SUBJECT]. Include Next Generation Learning Standards and ensure all activities meet NYSED requirements."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        	<!-- Curriculum Builder Tab -->
-        	<div id="curriculum-builder-content" class="tab-content">
-            	<div class="page-header">
-                	<div class="page-header-title">
-                    	<h1>Curriculum Builder</h1>
-                	</div>
-                	<button class="sf-button sf-button-primary" onclick="generateCurriculum()">Generate Curriculum</button>
-            	</div>
+            <!-- Curriculum Builder Tab -->
+            <div id="curriculum-builder-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Curriculum Builder</h1>
+                    </div>
+                    <button class="sf-button sf-button-primary" onclick="generateCurriculum()">Generate Curriculum</button>
+                </div>
 
-            	<div class="sf-card">
-                	<div class="sf-card-header">
-                    	Student Information
-                	</div>
-                	<div class="sf-card-body">
-                    	<div class="curriculum-form">
-                        	<div class="sf-form-element">
-                            	<label class="sf-form-label">Student Name</label>
-                            	<input type="text" class="sf-form-input" id="student-name" placeholder="Enter student name" value="Emma Johnson">
-                        	</div>
-                        	<div class="sf-form-element">
-                            	<label class="sf-form-label">Grade Level</label>
-                            	<select class="sf-form-input" id="grade-level">
-                                	<option>Select Grade</option>
-                                	<option>Kindergarten</option>
-                                	<option>1st Grade</option>
-                                	<option>2nd Grade</option>
-                                	<option>3rd Grade</option>
-                                	<option>4th Grade</option>
-                                	<option selected>5th Grade</option>
-                                	<option>6th Grade</option>
-                                	<option>7th Grade</option>
-                                	<option>8th Grade</option>
-                            	</select>
-                        	</div>
-                        	<div class="sf-form-element">
-                            	<label class="sf-form-label">Subject</label>
-                            	<select class="sf-form-input" id="subject">
-                                	<option>Select Subject</option>
-                                	<option selected>Mathematics</option>
-                                	<option>Science</option>
-                                	<option>English Language Arts</option>
-                                	<option>Social Studies</option>
-                            	</select>
-                        	</div>
-                        	<div class="sf-form-element">
-                            	<label class="sf-form-label">State</label>
-                            	<select class="sf-form-input" id="state">
-                                	<option>Select State</option>
-                                	<option selected>New York</option>
-                                	<option>California</option>
-                                	<option>Texas</option>
-                                	<option>Florida</option>
-                            	</select>
-                        	</div>
-                    	</div>
-                   	 
-                    	<div class="sf-form-element" style="margin-top: 24px;">
-                        	<label class="sf-form-label">Learning Accommodations</label>
-                        	<div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                            	<label><input type="checkbox" id="iep"> IEP</label>
-                            	<label><input type="checkbox" id="504"> 504 Plan</label>
-                            	<label><input type="checkbox" id="adhd" checked> ADHD</label>
-                            	<label><input type="checkbox" id="autism"> Autism</label>
-                            	<label><input type="checkbox" id="dyslexia"> Dyslexia</label>
-                            	<label><input type="checkbox" id="ell"> ELL</label>
-                        	</div>
-                    	</div>
-                	</div>
-            	</div>
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Student Information
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="curriculum-form">
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Student Name</label>
+                                <input type="text" class="sf-form-input" id="student-name" placeholder="Enter student name" value="Emma Johnson">
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Grade Level</label>
+                                <select class="sf-form-input" id="grade-level">
+                                    <option>Select Grade</option>
+                                    <option>Kindergarten</option>
+                                    <option>1st Grade</option>
+                                    <option>2nd Grade</option>
+                                    <option>3rd Grade</option>
+                                    <option>4th Grade</option>
+                                    <option selected>5th Grade</option>
+                                    <option>6th Grade</option>
+                                    <option>7th Grade</option>
+                                    <option>8th Grade</option>
+                                </select>
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Subject</label>
+                                <select class="sf-form-input" id="subject">
+                                    <option>Select Subject</option>
+                                    <option selected>Mathematics</option>
+                                    <option>Science</option>
+                                    <option>English Language Arts</option>
+                                    <option>Social Studies</option>
+                                </select>
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">State</label>
+                                <select class="sf-form-input" id="state">
+                                    <option>Select State</option>
+                                    <option selected>New York</option>
+                                    <option>California</option>
+                                    <option>Texas</option>
+                                    <option>Florida</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="sf-form-element" style="margin-top: 24px;">
+                            <label class="sf-form-label">Learning Accommodations</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                <label><input type="checkbox" id="iep"> IEP</label>
+                                <label><input type="checkbox" id="504"> 504 Plan</label>
+                                <label><input type="checkbox" id="adhd" checked> ADHD</label>
+                                <label><input type="checkbox" id="autism"> Autism</label>
+                                <label><input type="checkbox" id="dyslexia"> Dyslexia</label>
+                                <label><input type="checkbox" id="ell"> ELL</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            	<div id="curriculum-preview" class="curriculum-preview" style="display: none;">
-                	<h2>Generated Curriculum Preview</h2>
-                	<div class="curriculum-section">
-                    	<h3>Lesson Plan: Understanding Fractions</h3>
-                    	<p><strong>Student:</strong> <span id="preview-student">Emma Johnson</span></p>
-                    	<p><strong>Grade:</strong> <span id="preview-grade">5th Grade</span></p>
-                    	<p><strong>Subject:</strong> <span id="preview-subject">Mathematics</span></p>
-                    	<p><strong>Standards:</strong></p>
-                    	<div style="margin-left: 20px;">
-                        	<span class="standard-tag">NY-5.NF.1</span>
-                        	<span class="standard-tag">CCSS.MATH.5.NF.A.1</span>
-                    	</div>
-                	</div>
-               	 
-                	<div class="curriculum-section">
-                    	<h3>ADHD Accommodations</h3>
-                    	<ul>
-<li>Movement break every 15 minutes</li>
-                       	<li>Visual fraction models and manipulatives</li>
-                       	<li>Chunked instructions with checkpoints</li>
-                       	<li>Fidget tools allowed during instruction</li>
-                   	</ul>
-               	</div>
-              	 
-               	<div class="curriculum-section">
-                   	<h3>Lesson Activities</h3>
-                   	<ol>
-                       	<li><strong>Warm-up (5 min):</strong> Physical movement with fraction poses</li>
-                       	<li><strong>Introduction (10 min):</strong> Visual presentation with pizza models</li>
-                       	<li><strong>Guided Practice (15 min):</strong> Hands-on fraction tiles</li>
-                       	<li><strong>Movement Break (5 min):</strong> Fraction dance activity</li>
-                       	<li><strong>Independent Practice (10 min):</strong> Modified worksheet (5 problems)</li>
-                       	<li><strong>Cool-down (5 min):</strong> Review game with physical responses</li>
-                   	</ol>
-               	</div>
-              	 
-               	<button class="sf-button sf-button-primary" onclick="downloadCurriculum()">Download PDF</button>
-               	<button class="sf-button sf-button-secondary" onclick="editCurriculum()">Edit Curriculum</button>
-           	</div>
-       	</div>
+                <div id="curriculum-preview" class="curriculum-preview" style="display: none;">
+                    <h2>Generated Curriculum Preview</h2>
+                    <div class="curriculum-section">
+                        <h3>Lesson Plan: Understanding Fractions</h3>
+                        <p><strong>Student:</strong> <span id="preview-student">Emma Johnson</span></p>
+                        <p><strong>Grade:</strong> <span id="preview-grade">5th Grade</span></p>
+                        <p><strong>Subject:</strong> <span id="preview-subject">Mathematics</span></p>
+                        <p><strong>Standards:</strong></p>
+                        <div style="margin-left: 20px;">
+                            <span class="standard-tag">NY-5.NF.1</span>
+                            <span class="standard-tag">CCSS.MATH.5.NF.A.1</span>
+                        </div>
+                    </div>
+                    
+                    <div class="curriculum-section">
+                        <h3>ADHD Accommodations</h3>
+                        <ul>
+                            <li>Movement break every 15 minutes</li>
+                            <li>Visual fraction models and manipulatives</li>
+                            <li>Chunked instructions with checkpoints</li>
+                            <li>Fidget tools allowed during instruction</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="curriculum-section">
+                        <h3>Lesson Activities</h3>
+                        <ol>
+                            <li><strong>Warm-up (5 min):</strong> Physical movement with fraction poses</li>
+                            <li><strong>Introduction (10 min):</strong> Visual presentation with pizza models</li>
+                            <li><strong>Guided Practice (15 min):</strong> Hands-on fraction tiles</li>
+                            <li><strong>Movement Break (5 min):</strong> Fraction dance activity</li>
+                            <li><strong>Independent Practice (10 min):</strong> Modified worksheet (5 problems)</li>
+                            <li><strong>Cool-down (5 min):</strong> Review game with physical responses</li>
+                        </ol>
+                    </div>
+                    
+                    <button class="sf-button sf-button-primary" onclick="downloadCurriculum()">Download PDF</button>
+                    <button class="sf-button sf-button-secondary" onclick="editCurriculum()">Edit Curriculum</button>
+                </div>
+            </div>
 
-       	<!-- Setup Tab -->
-       	<div id="setup-content" class="tab-content">
-           	<div class="page-header">
-               	<div class="page-header-title">
-                   	<h1>Setup Assistant</h1>
-               	</div>
-           	</div>
+            <!-- Setup Tab -->
+            <div id="setup-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Setup Assistant</h1>
+                    </div>
+                </div>
 
-           	<div class="setup-progress">
-               	<h3>Setup Progress</h3>
-               	<div class="progress-bar">
-                   	<div class="progress-fill" id="progress-fill" style="width: 50%;"></div>
-               	</div>
-               	<div class="setup-steps">
-                   	<div class="setup-step">
-                       	<div class="step-circle completed">✓</div>
-                       	<span>Basic Info</span>
-                   	</div>
-                   	<div class="setup-step">
-                       	<div class="step-circle active">2</div>
-                       	<span>State Standards</span>
-                   	</div>
-                   	<div class="setup-step">
-                       	<div class="step-circle">3</div>
-                       	<span>Student Profiles</span>
-                   	</div>
-                   	<div class="setup-step">
-                       	<div class="step-circle">4</div>
-                       	<span>AI Training</span>
-                   	</div>
-               	</div>
-           	</div>
+                <div class="setup-progress">
+                    <h3>Setup Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 50%;"></div>
+                    </div>
+                    <div class="setup-steps">
+                        <div class="setup-step">
+                            <div class="step-circle completed">✓</div>
+                            <span>Basic Info</span>
+                        </div>
+                        <div class="setup-step">
+                            <div class="step-circle active">2</div>
+                            <span>State Standards</span>
+                        </div>
+                        <div class="setup-step">
+                            <div class="step-circle">3</div>
+                            <span>Student Profiles</span>
+                        </div>
+                        <div class="setup-step">
+                            <div class="step-circle">4</div>
+                            <span>AI Training</span>
+                        </div>
+                    </div>
+                </div>
 
-           	<div class="sf-card">
-               	<div class="sf-card-header">
-                   	Step 2: Select Your State Standards
-               	</div>
-               	<div class="sf-card-body">
-                   	<p style="margin-bottom: 16px;">Choose your state to automatically load relevant educational standards.</p>
-                  	 
-                   	<div class="sf-form-element">
-                       	<label class="sf-form-label">Select State</label>
-                       	<select class="sf-form-input" id="setup-state" onchange="loadStateStandards()">
-                           	<option>Select State</option>
-                           	<option value="NY">New York</option>
-                           	<option value="CA">California</option>
-                           	<option value="TX">Texas</option>
-                           	<option value="FL">Florida</option>
-                       	</select>
-                   	</div>
-                  	 
-                   	<div id="state-standards-info" style="display: none; margin-top: 16px;">
-                       	<h4>New York State Standards</h4>
-                       	<p>Loading standards from NYSED...</p>
-                       	<ul style="margin-top: 12px;">
-                           	<li>Next Generation Learning Standards</li>
-                           	<li>Common Core State Standards</li>
-                           	<li>NYS Science Learning Standards</li>
-                           	<li>Social Studies Framework</li>
-                       	</ul>
-                      	 
-                       	<button class="sf-button sf-button-primary" onclick="proceedToStep3()">Continue to Student Profiles</button>
-                   	</div>
-               	</div>
-           	</div>
-       	</div>
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Step 2: Select Your State Standards
+                    </div>
+                    <div class="sf-card-body">
+                        <p style="margin-bottom: 16px;">Choose your state to automatically load relevant educational standards.</p>
+                        
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Select State</label>
+                            <select class="sf-form-input" id="setup-state" onchange="loadStateStandards()">
+                                <option>Select State</option>
+                                <option value="NY">New York</option>
+                                <option value="CA">California</option>
+                                <option value="TX">Texas</option>
+                                <option value="FL">Florida</option>
+                            </select>
+                        </div>
+                        
+                        <div id="state-standards-info" style="display: none; margin-top: 16px;">
+                            <h4>New York State Standards</h4>
+                            <p>Loading standards from NYSED...</p>
+                            <ul style="margin-top: 12px;">
+                                <li>Next Generation Learning Standards</li>
+                                <li>Common Core State Standards</li>
+                                <li>NYS Science Learning Standards</li>
+                                <li>Social Studies Framework</li>
+                            </ul>
+                            
+                            <button class="sf-button sf-button-primary" onclick="proceedToStep3()">Continue to Student Profiles</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-       	<!-- Chat Tab -->
-       	<div id="chat-content" class="tab-content">
-           	<div class="page-header">
-               	<div class="page-header-title">
-                   	<h1>Einstein Curriculum Assistant</h1>
-               	</div>
-           	</div>
+            <!-- Chat Tab -->
+            <div id="chat-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Einstein Curriculum Assistant</h1>
+                    </div>
+                </div>
 
-           	<div class="sf-card">
-               	<div class="sf-card-body" style="padding: 0;">
-                   	<div class="einstein-chat">
-                       	<div class="chat-header">
-                           	<div class="einstein-logo">🧠</div>
-                           	<span>Einstein AI Assistant</span>
-                       	</div>
-                       	<div class="chat-messages" id="chat-messages">
-                           	<div class="chat-message">
-                               	<div class="message-avatar einstein-avatar">AI</div>
-                               	<div class="message-content">
-                                   	<p>Hello! I'm Einstein, your AI curriculum assistant. How can I help you create personalized, standards-aligned content for your homeschool today?</p>
-                                  	 
-                                   	<div class="response-options">
-                                       	<button class="response-button" onclick="handleQuickResponse('Create ADHD-friendly math lesson')">Create ADHD-friendly math lesson</button>
-                                       	<button class="response-button" onclick="handleQuickResponse('Find NY state standards')">Find NY state standards</button>
-                                       	<button class="response-button" onclick="handleQuickResponse('Generate IEP accommodations')">Generate IEP accommodations</button>
-                                       	<button class="response-button" onclick="handleQuickResponse('Design science experiment')">Design science experiment</button>
-                                   	</div>
-                               	</div>
-                           	</div>
-                       	</div>
-                       	<div class="chat-input-area">
-                           	<div class="template-pills">
-                               	<div class="template-pill" onclick="insertTemplate('ADHD math lesson')">ADHD Math</div>
-                               	<div class="template-pill" onclick="insertTemplate('Dyslexia reading')">Dyslexia Support</div>
-                               	<div class="template-pill" onclick="insertTemplate('IEP accommodations')">IEP Template</div>
-                               	<div class="template-pill" onclick="insertTemplate('NY standards')">NY Standards</div>
-                           	</div>
-                           	<div class="chat-input-wrapper">
-                               	<input type="text" class="sf-form-input" id="chat-input" placeholder="Ask Einstein anything about curriculum planning...">
-                               	<button class="sf-button sf-button-primary" onclick="sendChatMessage()">Send</button>
-                           	</div>
-                       	</div>
-                   	</div>
-               	</div>
-           	</div>
-       	</div>
+                <div class="sf-card">
+                    <div class="sf-card-body" style="padding: 0;">
+                        <div class="einstein-chat">
+                            <div class="chat-header">
+                                <div class="einstein-logo">🧠</div>
+                                <span>Einstein AI Assistant</span>
+                            </div>
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="chat-message">
+                                    <div class="message-avatar einstein-avatar">AI</div>
+                                    <div class="message-content">
+                                        <p>Hello! I'm Einstein, your AI curriculum assistant. How can I help you create personalized, standards-aligned content for your homeschool today?</p>
+                                        
+                                        <div class="response-options">
+                                            <button class="response-button" onclick="handleQuickResponse('Create ADHD-friendly math lesson')">Create ADHD-friendly math lesson</button>
+                                            <button class="response-button" onclick="handleQuickResponse('Find NY state standards')">Find NY state standards</button>
+                                            <button class="response-button" onclick="handleQuickResponse('Generate IEP accommodations')">Generate IEP accommodations</button>
+                                            <button class="response-button" onclick="handleQuickResponse('Design science experiment')">Design science experiment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chat-input-area">
+                                <div class="template-pills">
+                                    <div class="template-pill" onclick="insertTemplate('ADHD math lesson')">ADHD Math</div>
+                                    <div class="template-pill" onclick="insertTemplate('Dyslexia reading')">Dyslexia Support</div>
+                                    <div class="template-pill" onclick="insertTemplate('IEP accommodations')">IEP Template</div>
+                                    <div class="template-pill" onclick="insertTemplate('NY standards')">NY Standards</div>
+                                </div>
+                                <div class="chat-input-wrapper">
+                                    <input type="text" class="sf-form-input" id="chat-input" placeholder="Ask Einstein anything about curriculum planning...">
+                                    <button class="sf-button sf-button-primary" onclick="sendChatMessage()">Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-       	<!-- Publish Tab -->
-       	<div id="publish-content" class="tab-content">
-           	<div class="page-header">
-               	<div class="page-header-title">
-                   	<h1>Publish & Deploy</h1>
-               	</div>
-           	</div>
+            <!-- Publish Tab -->
+            <div id="publish-content" class="tab-content">
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Publish & Deploy</h1>
+                    </div>
+                </div>
 
-           	<div class="sf-card">
-               	<div class="sf-card-header">
-                   	Publishing Options
-               	</div>
-               	<div class="sf-card-body">
-                   	<p style="margin-bottom: 16px;">Choose how you want to publish your EduNavigator AI assistant:</p>
-                  	 
-                   	<div class="publish-options">
-                       	<div class="publish-option" onclick="selectPublishOption('appexchange')">
-                           	<div class="publish-option-icon">☁️</div>
-                           	<h4>Salesforce AppExchange</h4>
-                           	<p>Publish as a managed package for other Salesforce orgs</p>
-                       	</div>
-                      	 
-                       	<div class="publish-option" onclick="selectPublishOption('experience')">
-                           	<div class="publish-option-icon">🌐</div>
-                           	<h4>Experience Cloud Site</h4>
-                           	<p>Deploy as a public community for homeschool families</p>
-                       	</div>
-                      	 
-                       	<div class="publish-option" onclick="selectPublishOption('embedded')">
-                           	<div class="publish-option-icon">🔗</div>
-                           	<h4>Embedded Service</h4>
-                           	<p>Add as a chat widget to any website</p>
-                       	</div>
-                   	</div>
-               	</div>
-           	</div>
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Publishing Options
+                    </div>
+                    <div class="sf-card-body">
+                        <p style="margin-bottom: 16px;">Choose how you want to publish your EduNavigator AI assistant:</p>
+                        
+                        <div class="publish-options">
+                            <div class="publish-option" onclick="selectPublishOption('appexchange', this)">
+                                <div class="publish-option-icon">☁️</div>
+                                <h4>Salesforce AppExchange</h4>
+                                <p>Publish as a managed package for other Salesforce orgs</p>
+                            </div>
+                            
+                            <div class="publish-option" onclick="selectPublishOption('experience', this)">
+                                <div class="publish-option-icon">🌐</div>
+                                <h4>Experience Cloud Site</h4>
+                                <p>Deploy as a public community for homeschool families</p>
+                            </div>
+                            
+                            <div class="publish-option" onclick="selectPublishOption('embedded', this)">
+                                <div class="publish-option-icon">🔗</div>
+                                <h4>Embedded Service</h4>
+                                <p>Add as a chat widget to any website</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-           	<div id="deployment-details" class="sf-card" style="display: none;">
-               	<div class="sf-card-header">
-                   	Deployment Details
-               	</div>
-               	<div class="sf-card-body">
-                   	<div class="einstein-box" style="margin-bottom: 16px;">
-                       	<h3>🚀 Experience Cloud Deployment</h3>
-                       	<p>You've selected Experience Cloud deployment. This is perfect for creating a public-facing site for homeschool families.</p>
-                   	</div>
-                  	 
-                   	<h3>Quick Start Guide</h3>
-                   	<ol style="margin-left: 20px; line-height: 1.8;">
-                       	<li><strong>Create Experience Cloud Site:</strong> Go to Setup → Digital Experiences → New</li>
-                       	<li><strong>Choose Template:</strong> Select "Customer Service" template</li>
-                       	<li><strong>Add Einstein Bot:</strong> Navigate to Builder → Components → Einstein Bots</li>
-                       	<li><strong>Configure Permissions:</strong> Enable guest user access for public use</li>
-                       	<li><strong>Customize Branding:</strong> Add your logo and colors</li>
-                       	<li><strong>Publish:</strong> Click "Publish" and share your site URL</li>
-                   	</ol>
-                  	 
-                   	<div style="margin-top: 24px;">
-                       	<button class="sf-button sf-button-primary" onclick="startDeployment()">Start Deployment</button>
-                       	<button class="sf-button sf-button-secondary" onclick="downloadGuide()">Download Setup Guide</button>
-                   	</div>
-                  	 
-                   	<div id="deployment-success" class="success-message">
-                       	<strong>Success!</strong> Your deployment has been initiated. Check your email for next steps.
-                   	</div>
-               	</div>
-           	</div>
-       	</div>
-   	</main>
-   </div>
+                <div id="deployment-details" class="sf-card" style="display: none;">
+                    <div class="sf-card-header">
+                        Deployment Details
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="einstein-box" style="margin-bottom: 16px;">
+                            <h3>🚀 Experience Cloud Deployment</h3>
+                            <p>You've selected Experience Cloud deployment. This is perfect for creating a public-facing site for homeschool families.</p>
+                        </div>
+                        
+                        <h3>Quick Start Guide</h3>
+                        <ol style="margin-left: 20px; line-height: 1.8;">
+                            <li><strong>Create Experience Cloud Site:</strong> Go to Setup → Digital Experiences → New</li>
+                            <li><strong>Choose Template:</strong> Select "Customer Service" template</li>
+                            <li><strong>Add Einstein Bot:</strong> Navigate to Builder → Components → Einstein Bots</li>
+                            <li><strong>Configure Permissions:</strong> Enable guest user access for public use</li>
+                            <li><strong>Customize Branding:</strong> Add your logo and colors</li>
+                            <li><strong>Publish:</strong> Click "Publish" and share your site URL</li>
+                        </ol>
+                        
+                        <div style="margin-top: 24px;">
+                            <button class="sf-button sf-button-primary" onclick="startDeployment()">Start Deployment</button>
+                            <button class="sf-button sf-button-secondary" onclick="downloadGuide()">Download Setup Guide</button>
+                        </div>
+                        
+                        <div id="deployment-success" class="success-message">
+                            <strong>Success!</strong> Your deployment has been initiated. Check your email for next steps.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
-   <script>
-   	// Tab switching
-   	function switchTab(tabName) {
-       	// Remove active class from all nav items
-       	document.querySelectorAll('.sf-nav-item').forEach(item => {
-           	item.classList.remove('active');
-       	});
-      	 
-       	// Add active class to clicked nav item
-       	event.currentTarget.classList.add('active');
-      	 
-       	// Hide all tab contents
-       	document.querySelectorAll('.tab-content').forEach(content => {
-           	content.classList.remove('active');
-       	});
-      	 
-       	// Show selected tab content
-       	const tabContent = document.getElementById(tabName + '-content');
-       	if (tabContent) {
-           	tabContent.classList.add('active');
-       	}
-   	}
-  	 
-   	// Sidebar navigation
-   	function showContent(contentType) {
-       	// Remove active class from all sidebar items
-       	document.querySelectorAll('.sf-sidebar-item').forEach(item => {
-           	item.classList.remove('active');
-       	});
-      	 
-       	// Add active class to clicked item
-       	event.currentTarget.classList.add('active');
-      	 
-       	// Here you would typically load different content based on contentType
-       	console.log('Loading content for:', contentType);
-   	}
-  	 
-   	// Enhanced Chat functionality with clickable responses
-   	function sendChatMessage() {
-       	const input = document.getElementById('chat-input');
-       	const message = input.value.trim();
-      	 
-       	if (message) {
-           	// Add user message
-           	addChatMessage('You', message, true);
-           	input.value = '';
-          	 
-           	// Show Einstein thinking
-           	showThinkingIndicator();
-          	 
-           	// Simulate AI response
-           	setTimeout(() => {
-               	removeThinkingIndicator();
-               	const response = generateAIResponse(message);
-               	addChatMessage('AI', response, false);
-           	}, 1500);
-       	}
-   	}
-  	 
-   	function handleQuickResponse(responseText) {
-       	const input = document.getElementById('chat-input');
-       	input.value = responseText;
-       	sendChatMessage();
-   	}
-  	 
-   	function addChatMessage(sender, message, isUser) {
-       	const messagesContainer = document.getElementById('chat-messages');
-       	const messageDiv = document.createElement('div');
-       	messageDiv.className = 'chat-message';
-      	 
-       	messageDiv.innerHTML = `
-           	<div class="message-avatar ${isUser ? 'user-avatar' : 'einstein-avatar'}">${sender === 'AI' ? '🧠' : sender.charAt(0)}</div>
-           	<div class="message-content">
-               	${message}
-           	</div>
-       	`;
-      	 
-       	messagesContainer.appendChild(messageDiv);
-       	messagesContainer.scrollTop = messagesContainer.scrollHeight;
-   	}
-  	 
-   	function showThinkingIndicator() {
-       	const messagesContainer = document.getElementById('chat-messages');
-       	const thinkingDiv = document.createElement('div');
-       	thinkingDiv.className = 'chat-message thinking-message';
-       	thinkingDiv.innerHTML = `
-           	<div class="message-avatar einstein-avatar">🧠</div>
-           	<div class="message-content">
-               	<div class="einstein-thinking">
-                   	Einstein is thinking
-                   	<div class="thinking-dots">
-                       	<div class="thinking-dot"></div>
-                       	<div class="thinking-dot"></div>
-                       	<div class="thinking-dot"></div>
-                   	</div>
-               	</div>
-           	</div>
-       	`;
-       	messagesContainer.appendChild(thinkingDiv);
-       	messagesContainer.scrollTop = messagesContainer.scrollHeight;
-   	}
-  	 
-   	function removeThinkingIndicator() {
-       	const thinkingMessage = document.querySelector('.thinking-message');
-       	if (thinkingMessage) {
-           	thinkingMessage.remove();
-       	}
-   	}
-  	 
-   	function generateAIResponse(message) {
-       	const lowerMessage = message.toLowerCase();
-      	 
-       	// Handle template browsing
-       	if (lowerMessage.includes('browse') && lowerMessage.includes('template')) {
-           	return `<p>Here are some popular curriculum templates organized by category:</p>
-                   	<div class="template-grid">
-                       	<div class="template-card" onclick="handleQuickResponse('Use ADHD math template')">
-                           	<h4>ADHD Math Support</h4>
-                           	<p>Movement breaks, visual aids, chunked lessons</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use dyslexia reading template')">
-                           	<h4>Dyslexia Reading</h4>
-                           	<p>Orton-Gillingham approach, multisensory activities</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use autism science template')">
-                           	<h4>Autism Science</h4>
-                           	<p>Visual schedules, sensory considerations</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use ELL social studies template')">
-                           	<h4>ELL Social Studies</h4>
-                           	<p>Vocabulary support, visual aids, simplified text</p>
-                       	</div>
-                   	</div>
-                   	<p>Click on any template to start creating your customized curriculum.</p>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Show more templates')">Show More Templates</button>
-                       	<button class="response-button" onclick="switchTab('prompt-templates')">Go to Template Library</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Create custom template')">Create Custom Template</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle "Show more templates"
-       	if (lowerMessage.includes('show more template')) {
-           	return `<p>Here are additional specialized templates:</p>
-                   	<div class="template-grid">
-                       	<div class="template-card" onclick="handleQuickResponse('Use gifted math template')">
-                           	<h4>Gifted & Talented Math</h4>
-                           	<p>Advanced concepts, problem-based learning</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use 504 anxiety template')">
-                           	<h4>504 Plan - Anxiety</h4>
-                           	<p>Calming strategies, flexible deadlines</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use hands-on science template')">
-                           	<h4>Hands-On Science</h4>
-                           	<p>Kitchen experiments, outdoor activities</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Use project-based learning template')">
-                           	<h4>Project-Based Learning</h4>
-                           	<p>Real-world applications, student choice</p>
-                       	</div>
-                   	</div>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Filter by grade level')">Filter by Grade</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Filter by subject')">Filter by Subject</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Search templates')">Search Templates</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle specific template selections
-       	if (lowerMessage.includes('use') && lowerMessage.includes('template')) {
-           	const templateName = message.split('Use ')[1].split(' template')[0];
-           	return `<p>Great! I'll help you create a curriculum using the <strong>${templateName}</strong> template.</p>
-                   	<p>To get started, I need some information about your student:</p>
-                   	<ul style="margin: 12px 0;">
-                       	<li>Student's name and grade level</li>
-                       	<li>Specific learning objectives</li>
-                       	<li>Available time per lesson</li>
-                       	<li>Any additional accommodations needed</li>
-                   	</ul>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="switchTab('curriculum-builder')">Go to Curriculum Builder</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Enter student information')">Enter Student Info</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Use sample data')">Use Sample Data</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle lesson plan creation
-       	if (lowerMessage.includes('create') && lowerMessage.includes('lesson')) {
-           	return `<p>I'll help you create a personalized lesson plan. Let's start with the basics:</p>
-                   	<ol style="margin: 12px 0;">
-                       	<li>What subject would you like to teach?</li>
-                       	<li>What grade level is your student?</li>
-                       	<li>Are there any specific standards you need to meet?</li>
-                       	<li>Does your student have any special learning needs?</li>
-                   	</ol>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Math lesson for 5th grade')">Math - 5th Grade</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Science lesson for 7th grade')">Science - 7th Grade</button>
-                       	<button class="response-button" onclick="handleQuickResponse('ELA lesson for 3rd grade')">ELA - 3rd Grade</button>
-                       	<button class="response-button" onclick="switchTab('curriculum-builder')">Use Curriculum Builder</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle standards lookup
-       	if (lowerMessage.includes('find') && lowerMessage.includes('standard')) {
-           	return `<p>I can help you find educational standards. What type of standards are you looking for?</p>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('NY state math standards')">NY Math Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Common Core standards')">Common Core Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('NGSS science standards')">NGSS Science Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('State-specific standards')">State-Specific Standards</button>
-                   	</div>
-                   	<p style="margin-top: 16px;">You can also search for specific standards by entering a keyword or standard code.</p>`;
-       	}
-      	 
-       	// Handle accommodations
-       	if (lowerMessage.includes('accommodations') || lowerMessage.includes('iep') || lowerMessage.includes('504')) {
-           	return `<p>I can help you implement appropriate accommodations. What type of support does your student need?</p>
-                   	<div class="template-grid">
-                       	<div class="template-card" onclick="handleQuickResponse('ADHD accommodations')">
-                           	<h4>ADHD Support</h4>
-                           	<p>Movement breaks, focus strategies, reduced distractions</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Dyslexia accommodations')">
-                           	<h4>Dyslexia Support</h4>
-                           	<p>Reading aids, extra time, oral instructions</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Anxiety accommodations')">
-                           	<h4>Anxiety Support</h4>
-                           	<p>Flexible deadlines, quiet space, check-ins</p>
-                       	</div>
-                       	<div class="template-card" onclick="handleQuickResponse('Autism accommodations')">
-                           	<h4>Autism Support</h4>
-                           	<p>Visual schedules, routine, sensory breaks</p>
-                       	</div>
-                   	</div>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Create IEP template')">Create IEP Template</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Create 504 plan')">Create 504 Plan</button>
-                       	<button class="response-button" onclick="handleQuickResponse('View all accommodations')">View All Accommodations</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle ADHD-specific requests
-       	if (lowerMessage.includes('adhd') && (lowerMessage.includes('math') || lowerMessage.includes('lesson'))) {
-           	return `<p>I'll create an ADHD-friendly math lesson for you. Here's what I'll include:</p>
-                   	<ul style="margin: 12px 0;">
-                       	<li>Movement breaks every 15 minutes</li>
-                       	<li>Visual aids and color-coding</li>
-                       	<li>Hands-on manipulatives</li>
-                       	<li>Chunked instructions with checkpoints</li>
-                   	</ul>
-                   	<p>What specific math topic would you like me to focus on?</p>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Fractions for 5th grade')">Fractions</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Multiplication for 3rd grade')">Multiplication</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Algebra basics for 7th grade')">Algebra</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Geometry for 6th grade')">Geometry</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle NY state standards
-       	if (lowerMessage.includes('ny') || lowerMessage.includes('new york') || lowerMessage.includes('standards')) {
-           	return `<p>I can help you find New York State Learning Standards. Here are the main categories:</p>
-                   	<ul style="margin: 12px 0;">
-                       	<li>Next Generation Learning Standards (NGLS)</li>
-                       	<li>NYS P-12 Science Learning Standards</li>
-                       	<li>Social Studies Framework</li>
-                       	<li>Arts Learning Standards</li>
-                   	</ul>
-                   	<p>Which subject area interests you?</p>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('NY Math standards for grade 5')">Math Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('NY ELA standards for grade 7')">ELA Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('NY Science standards for middle school')">Science Standards</button>
-                       	<button class="response-button" onclick="handleQuickResponse('View all NY standards')">View All</button>
-                   	</div>`;
-       	}
-      	 
-       	// Handle science experiment requests
-       	if (lowerMessage.includes('science') || lowerMessage.includes('experiment')) {
-           	return `<p>I'd be happy to design a science experiment! Let me know:</p>
-                   	<ul style="margin: 12px 0;">
-                       	<li>Grade level</li>
-                       	<li>Science topic or standard</li>
-                       	<li>Any special accommodations needed</li>
-                       	<li>Available materials</li>
-                   	</ul>
-                   	<p>What type of science experiment interests you?</p>
-                   	<div class="response-options">
-                       	<button class="response-button" onclick="handleQuickResponse('Kitchen chemistry experiments')">Kitchen Chemistry</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Plant growth experiment')">Life Science</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Simple physics demonstrations')">Physics</button>
-                       	<button class="response-button" onclick="handleQuickResponse('Weather and climate project')">Earth Science</button>
-                   	</div>`;
-       	}
-      	 
-       	// Default response
-       	return `<p>I understand you're looking for curriculum support. I can help with:</p>
-               	<ul style="margin: 12px 0;">
-                   	<li>Creating personalized lesson plans</li>
-                   	<li>Finding state standards</li>
-                   	<li>Implementing IEP/504 accommodations</li>
-                   	<li>Designing hands-on activities</li>
-               	</ul>
-               	<p>What would you like to start with?</p>
-               	<div class="response-options">
-                   	<button class="response-button" onclick="handleQuickResponse('Create a lesson plan')">Create Lesson Plan</button>
-                   	<button class="response-button" onclick="handleQuickResponse('Find state standards')">Find Standards</button>
-                   	<button class="response-button" onclick="handleQuickResponse('Add accommodations')">Add Accommodations</button>
-                   	<button class="response-button" onclick="handleQuickResponse('Browse templates')">Browse Templates</button>
-               	</div>`;
-   	}
-  	 
-   	function insertTemplate(templateType) {
-       	const input = document.getElementById('chat-input');
-      	 
-       	const templates = {
-           	'ADHD math lesson': 'Create a 5th grade math lesson on fractions for a student with ADHD. Include movement breaks, visual aids, and hands-on activities.',
-           	'Dyslexia reading': 'Design a reading comprehension lesson for a 4th grader with dyslexia using Orton-Gillingham approach.',
-           	'IEP accommodations': 'Generate IEP accommodations for a middle school student with ADHD and anxiety.',
-           	'NY standards': 'Find New York State Learning Standards for 5th grade mathematics, specifically fractions and decimals.'
-       	};
-      	 
-       	input.value = templates[templateType] || `Help me with ${templateType}`;
-       	input.focus();
-   	}
-  	 
-   	// Curriculum Builder functionality
-   	function generateCurriculum() {
-       	const studentName = document.getElementById('student-name').value;
-       	const gradeLevel = document.getElementById('grade-level').value;
-       	const subject = document.getElementById('subject').value;
-       	const state = document.getElementById('state').value;
-      	 
-       	// Show loading
-       	const previewDiv = document.getElementById('curriculum-preview');
-       	previewDiv.style.display = 'block';
-       	previewDiv.innerHTML = '<p>Generating curriculum...</p>';
-      	 
-       	// Simulate API call
-       	setTimeout(() => {
-           	// Update preview with actual content
-           	document.getElementById('preview-student').textContent = studentName;
-           	document.getElementById('preview-grade').textContent = gradeLevel;
-           	document.getElementById('preview-subject').textContent = subject;
-          	 
-           	// Restore the full preview content
-           	previewDiv.innerHTML = `
-               	<h2>Generated Curriculum Preview</h2>
-               	<div class="curriculum-section">
-                   	<h3>Lesson Plan: Understanding Fractions</h3>
-                   	<p><strong>Student:</strong> <span id="preview-student">${studentName}</span></p>
-                   	<p><strong>Grade:</strong> <span id="preview-grade">${gradeLevel}</span></p>
-                   	<p><strong>Subject:</strong> <span id="preview-subject">${subject}</span></p>
-                   	<p><strong>Standards:</strong></p>
-                   	<div style="margin-left: 20px;">
-                       	<span class="standard-tag">NY-5.NF.1</span>
-                       	<span class="standard-tag">CCSS.MATH.5.NF.A.1</span>
-                   	</div>
-               	</div>
-              	 
-               	<div class="curriculum-section">
-                   	<h3>ADHD Accommodations</h3>
-                   	<ul>
-                       	<li>Movement break every 15 minutes</li>
-                       	<li>Visual fraction models and manipulatives</li>
-                       	<li>Chunked instructions with checkpoints</li>
-                       	<li>Fidget tools allowed during instruction</li>
-                   	</ul>
-               	</div>
-              	 
-               	<div class="curriculum-section">
-                   	<h3>Lesson Activities</h3>
-                   	<ol>
-                       	<li><strong>Warm-up (5 min):</strong> Physical movement with fraction poses</li>
-                       	<li><strong>Introduction (10 min):</strong> Visual presentation with pizza models</li>
-                       	<li><strong>Guided Practice (15 min):</strong> Hands-on fraction tiles</li>
-                       	<li><strong>Movement Break (5 min):</strong> Fraction dance activity</li>
-                       	<li><strong>Independent Practice (10 min):</strong> Modified worksheet (5 problems)</li>
-                       	<li><strong>Cool-down (5 min):</strong> Review game with physical responses</li>
-                   	</ol>
-               	</div>
-              	 
-               	<button class="sf-button sf-button-primary" onclick="downloadCurriculum()">Download PDF</button>
-               	<button class="sf-button sf-button-secondary" onclick="editCurriculum()">Edit Curriculum</button>
-           	`;
-       	}, 2000);
-   	}
-  	 
-   	// Setup Assistant functionality
-   	function loadStateStandards() {
-       	const state = document.getElementById('setup-state').value;
-       	const infoDiv = document.getElementById('state-standards-info');
-      	 
-       	if (state === 'NY') {
-           	infoDiv.style.display = 'block';
-           	// Update progress
-           	document.getElementById('progress-fill').style
-function proceedToStep3() {
-    	// Update progress
-    	document.getElementById('progress-fill').style.width = '75%';
-    	// In a real app, this would navigate to the next step
-    	alert('Proceeding to Student Profiles...');
-	}
-    
-	// Publishing functionality
-	function selectPublishOption(option) {
-    	// Remove selection from all options
-    	document.querySelectorAll('.publish-option').forEach(opt => {
-        	opt.style.border = '2px solid #dddbda';
-    	});
-   	 
-    	// Highlight selected option
-    	event.currentTarget.style.border = '2px solid #0070d2';
-   	 
-    	// Show deployment details
-    	const detailsDiv = document.getElementById('deployment-details');
-    	if (option === 'experience') {
-        	detailsDiv.style.display = 'block';
-    	}
-	}
-    
-	function startDeployment() {
-    	// Simulate deployment
-    	document.getElementById('deployment-success').style.display = 'block';
-	}
-    
-	// Template functionality
-	function useTemplate(templateElement) {
-    	const exampleText = templateElement.querySelector('.prompt-template-example').textContent.trim();
-   	 
-    	// Switch to chat tab
-    	switchTab('chat');
-   	 
-    	// Find and click the chat nav item
-    	document.querySelectorAll('.sf-nav-item').forEach((item, index) => {
-        	if (item.textContent === 'Einstein Chat') {
-            	item.click();
-        	}
-    	});
-   	 
-    	// Insert template into chat
-    	document.getElementById('chat-input').value = exampleText;
-	}
-    
-	// Helper functions
-	function downloadCurriculum() {
-    	alert('Downloading curriculum as PDF...');
-	}
-    
-	function editCurriculum() {
-    	alert('Opening curriculum editor...');
-	}
-    
-	function downloadGuide() {
-    	alert('Downloading setup guide...');
-	}
-    
-	function showCreateTemplateModal() {
-    	alert('Opening template creator...');
-	}
-    
-	// Enter key support for chat
-	document.addEventListener('DOMContentLoaded', () => {
-    	const chatInput = document.getElementById('chat-input');
-    	if (chatInput) {
-        	chatInput.addEventListener('keypress', (e) => {
-            	if (e.key === 'Enter') {
-                	sendChatMessage();
-            	}
-        	});
-    	}
-	});
-</script>
-</body> </html>
+    <script>
+        // Tab switching
+        function switchTab(tabName, element) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.sf-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked nav item
+            element.classList.add('active');
+            
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const tabContent = document.getElementById(tabName + '-content');
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+        }
+        
+        // Sidebar navigation
+        function showContent(contentType, element) {
+            // Remove active class from all sidebar items
+            document.querySelectorAll('.sf-sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            element.classList.add('active');
+            
+            // Get the active tab content area
+            const activeTab = document.querySelector('.tab-content.active');
+            const contentArea = activeTab.querySelector('.sf-content') || activeTab;
+            
+            // Generate content based on contentType
+            let content = '';
+            
+            switch(contentType) {
+                case 'overview':
+                    content = generateOverviewContent();
+                    break;
+                case 'templates':
+                    content = generateTemplatesContent();
+                    break;
+                case 'standards':
+                    content = generateStandardsContent();
+                    break;
+                case 'students':
+                    content = generateStudentsContent();
+                    break;
+                case 'analytics':
+                    content = generateAnalyticsContent();
+                    break;
+                case 'settings':
+                    content = generateSettingsContent();
+                    break;
+            }
+            
+            // Update the content area
+            contentArea.innerHTML = content;
+        }
+        
+        function generateOverviewContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Dashboard Overview</h1>
+                    </div>
+                </div>
+                
+                <div class="einstein-box">
+                    <h3>🧠 Einstein AI Insights</h3>
+                    <p>Your students are making great progress! Here are today's recommendations based on their learning patterns.</p>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <h2 style="color: #0070d2; margin-bottom: 8px;">12</h2>
+                            <p>Active Students</p>
+                        </div>
+                    </div>
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <h2 style="color: #4bca81; margin-bottom: 8px;">48</h2>
+                            <p>Lessons Created</p>
+                        </div>
+                    </div>
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <h2 style="color: #ff6b6b; margin-bottom: 8px;">5</h2>
+                            <p>Upcoming Assessments</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Recent Activity
+                    </div>
+                    <div class="sf-card-body">
+                        <table class="sf-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Activity</th>
+                                    <th>Subject</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Emma Johnson</td>
+                                    <td>Completed Lesson</td>
+                                    <td>Mathematics</td>
+                                    <td>2 hours ago</td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Chen</td>
+                                    <td>Started Assessment</td>
+                                    <td>Science</td>
+                                    <td>3 hours ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateTemplatesContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Curriculum Templates</h1>
+                    </div>
+                    <button class="sf-button sf-button-primary" onclick="showCreateTemplateModal()">Create New Template</button>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Featured Templates
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="template-grid">
+                            <div class="template-card" onclick="useTemplateFromLibrary('adhd-math')">
+                                <h4>ADHD Math Support</h4>
+                                <p>Movement breaks, visual aids, chunked lessons for math</p>
+                                <span class="standard-tag">Grade 3-5</span>
+                                <span class="standard-tag">ADHD</span>
+                            </div>
+                            <div class="template-card" onclick="useTemplateFromLibrary('dyslexia-reading')">
+                                <h4>Dyslexia Reading Program</h4>
+                                <p>Orton-Gillingham approach with multi-sensory activities</p>
+                                <span class="standard-tag">Grade 2-4</span>
+                                <span class="standard-tag">Dyslexia</span>
+                            </div>
+                            <div class="template-card" onclick="useTemplateFromLibrary('autism-science')">
+                                <h4>Autism-Friendly Science</h4>
+                                <p>Structured experiments with visual schedules</p>
+                                <span class="standard-tag">Grade 4-7</span>
+                                <span class="standard-tag">Autism</span>
+                            </div>
+                            <div class="template-card" onclick="useTemplateFromLibrary('gifted-ela')">
+                                <h4>Gifted ELA Enrichment</h4>
+                                <p>Advanced literary analysis and creative writing</p>
+                                <span class="standard-tag">Grade 6-8</span>
+                                <span class="standard-tag">Gifted</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        My Templates
+                    </div>
+                    <div class="sf-card-body">
+                        <table class="sf-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Template Name</th>
+                                    <th>Subject</th>
+                                    <th>Grade Level</th>
+                                    <th>Last Modified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Weekly Math Review</td>
+                                    <td>Mathematics</td>
+                                    <td>5th Grade</td>
+                                    <td>May 5, 2025</td>
+                                    <td>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;">Duplicate</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateStandardsContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Educational Standards</h1>
+                    </div>
+                </div>
+                
+                <div class="einstein-box">
+                    <h3>🎯 Choose Your Educational Approach</h3>
+                    <p>Select the type of educational philosophy that best matches your homeschool style. This will customize how Einstein AI generates curriculum and assessments.</p>
+                </div>
+                
+                <div class="standards-grid">
+                    <div class="standard-card" onclick="selectEducationalApproach('public-school')">
+                        <h4>Public School Standards</h4>
+                        <p>Common Core and state standards aligned curriculum</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Common Core</span>
+                            <span class="standard-tag">State Aligned</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('private-school')">
+                        <h4>Private School Standards</h4>
+                        <p>Advanced academics with enrichment focus</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Advanced</span>
+                            <span class="standard-tag">College Prep</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('religious')">
+                        <h4>Religious Education</h4>
+                        <p>Faith-based curriculum with moral development</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Faith-Based</span>
+                            <span class="standard-tag">Character Ed</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('montessori')">
+                        <h4>Montessori Method</h4>
+                        <p>Self-directed, hands-on learning approach</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Self-Paced</span>
+                            <span class="standard-tag">Hands-On</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('waldorf')">
+                        <h4>Waldorf/Steiner</h4>
+                        <p>Arts-integrated, developmentally appropriate</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Arts Focus</span>
+                            <span class="standard-tag">Holistic</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('unschooling')">
+                        <h4>Unschooling</h4>
+                        <p>Interest-led, experiential learning</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Child-Led</span>
+                            <span class="standard-tag">Flexible</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('classical')">
+                        <h4>Classical Education</h4>
+                        <p>Trivium-based liberal arts approach</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Liberal Arts</span>
+                            <span class="standard-tag">Logic Focus</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('stem')">
+                        <h4>STEM Focused</h4>
+                        <p>Science, technology, engineering, and math emphasis</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">STEM</span>
+                            <span class="standard-tag">Project-Based</span>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card" onclick="selectEducationalApproach('eclectic')">
+                        <h4>Eclectic Approach</h4>
+                        <p>Mix of various educational philosophies</p>
+                        <div style="margin-top: 12px;">
+                            <span class="standard-tag">Flexible</span>
+                            <span class="standard-tag">Customized</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="selected-approach-details" style="display: none; margin-top: 24px;">
+                    <div class="sf-card">
+                        <div class="sf-card-header">
+                            <span id="selected-approach-title">Selected Approach</span>
+                        </div>
+                        <div class="sf-card-body" id="selected-approach-content">
+                            <!-- Content will be populated when an approach is selected -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateStudentsContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Student Management</h1>
+                    </div>
+                    <button class="sf-button sf-button-primary" onclick="addNewStudent()">Add New Student</button>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Active Students
+                    </div>
+                    <div class="sf-card-body">
+                        <table class="sf-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student Name</th>
+                                    <th>Grade Level</th>
+                                    <th>Learning Profile</th>
+                                    <th>Current Progress</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Emma Johnson</td>
+                                    <td>5th Grade</td>
+                                    <td><span class="standard-tag">ADHD</span></td>
+                                    <td>
+                                        <div style="background-color: #e5e5e4; border-radius: 4px; overflow: hidden;">
+                                            <div style="width: 75%; background-color: #4bca81; height: 8px;"></div>
+                                        </div>
+                                        <small>75% Complete</small>
+                                    </td>
+                                    <td>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="viewStudentProfile('emma')">View Profile</button>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="viewProgressReport('emma')">Progress Report</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Michael Chen</td>
+                                    <td>7th Grade</td>
+                                    <td><span class="standard-tag">Gifted</span></td>
+                                    <td>
+                                        <div style="background-color: #e5e5e4; border-radius: 4px; overflow: hidden;">
+                                            <div style="width: 60%; background-color: #4bca81; height: 8px;"></div>
+                                        </div>
+                                        <small>60% Complete</small>
+                                    </td>
+                                    <td>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="viewStudentProfile('michael')">View Profile</button>
+                                        <button class="sf-button sf-button-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="viewProgressReport('michael')">Progress Report</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Student Groups
+                    </div>
+                    <div class="sf-card-body">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                            <div style="border: 1px solid #dddbda; border-radius: 8px; padding: 16px; text-align: center;">
+                                <h3>Elementary</h3>
+                                <p style="font-size: 24px; color: #0070d2; margin: 8px 0;">5</p>
+                                <p style="color: #706e6b;">Students</p>
+                            </div>
+                            <div style="border: 1px solid #dddbda; border-radius: 8px; padding: 16px; text-align: center;">
+                                <h3>Middle School</h3>
+                                <p style="font-size: 24px; color: #0070d2; margin: 8px 0;">4</p>
+                                <p style="color: #706e6b;">Students</p>
+                            </div>
+                            <div style="border: 1px solid #dddbda; border-radius: 8px; padding: 16px; text-align: center;">
+                                <h3>High School</h3>
+                                <p style="font-size: 24px; color: #0070d2; margin: 8px 0;">3</p>
+                                <p style="color: #706e6b;">Students</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateAnalyticsContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Learning Analytics</h1>
+                    </div>
+                    <select class="sf-form-input" style="width: 200px;">
+                        <option>Last 30 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>This School Year</option>
+                    </select>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <p style="color: #706e6b; margin-bottom: 8px;">Lessons Completed</p>
+                            <h2 style="color: #0070d2;">156</h2>
+                            <small style="color: #4bca81;">+12% from last month</small>
+                        </div>
+                    </div>
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <p style="color: #706e6b; margin-bottom: 8px;">Average Score</p>
+                            <h2 style="color: #4bca81;">87%</h2>
+                            <small style="color: #4bca81;">+5% improvement</small>
+                        </div>
+                    </div>
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <p style="color: #706e6b; margin-bottom: 8px;">Study Time</p>
+                            <h2 style="color: #ff6b6b;">4.2h</h2>
+                            <small style="color: #ff6b6b;">Daily average</small>
+                        </div>
+                    </div>
+                    <div class="sf-card">
+                        <div class="sf-card-body" style="text-align: center;">
+                            <p style="color: #706e6b; margin-bottom: 8px;">Standards Met</p>
+                            <h2 style="color: #0070d2;">42</h2>
+                            <small>This quarter</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Subject Performance
+                    </div>
+                    <div class="sf-card-body">
+                        <div style="height: 300px; display: flex; align-items: center; justify-content: center; background-color: #f4f6f9; border-radius: 8px;">
+                            <p style="color: #706e6b;">Chart visualization would appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Learning Trends
+                    </div>
+                    <div class="sf-card-body">
+                        <table class="sf-data-table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>This Month</th>
+                                    <th>Last Month</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Mathematics</td>
+                                    <td>85%</td>
+                                    <td>78%</td>
+                                    <td><span style="color: #4bca81;">↑ +7%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Science</td>
+                                    <td>92%</td>
+                                    <td>90%</td>
+                                    <td><span style="color: #4bca81;">↑ +2%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>English Language Arts</td>
+                                    <td>88%</td>
+                                    <td>91%</td>
+                                    <td><span style="color: #ff6b6b;">↓ -3%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateSettingsContent() {
+            return `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Settings</h1>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Einstein AI Preferences
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">AI Response Style</label>
+                            <select class="sf-form-input">
+                                <option>Friendly and Encouraging</option>
+                                <option>Professional and Direct</option>
+                                <option>Simplified for Young Learners</option>
+                            </select>
+                        </div>
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Default Lesson Duration</label>
+                            <select class="sf-form-input">
+                                <option>30 minutes</option>
+                                <option selected>45 minutes</option>
+                                <option>60 minutes</option>
+                                <option>90 minutes</option>
+                            </select>
+                        </div>
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Curriculum Complexity</label>
+                            <select class="sf-form-input">
+                                <option>Basic</option>
+                                <option selected>Standard</option>
+                                <option>Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Organization Settings
+                    </div>
+                    <div class="sf-card-body">
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Homeschool Name</label>
+                            <input type="text" class="sf-form-input" value="Johnson Family Academy">
+                        </div>
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Primary Contact Email</label>
+                            <input type="email" class="sf-form-input" value="parent@example.com">
+                        </div>
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Time Zone</label>
+                            <select class="sf-form-input">
+                                <option>Eastern Time (ET)</option>
+                                <option>Central Time (CT)</option>
+                                <option>Mountain Time (MT)</option>
+                                <option>Pacific Time (PT)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">
+                        Notification Settings
+                    </div>
+                    <div class="sf-card-body">
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" checked>
+                                Email weekly progress reports
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" checked>
+                                Notify when assessments are due
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox">
+                                Daily activity summary
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 24px;">
+                    <button class="sf-button sf-button-primary">Save Settings</button>
+                    <button class="sf-button sf-button-secondary">Cancel</button>
+                </div>
+            `;
+        }
+        
+        // Enhanced Chat functionality with clickable responses
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                addChatMessage('You', message, true);
+                input.value = '';
+                
+                // Show Einstein thinking
+                showThinkingIndicator();
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    removeThinkingIndicator();
+                    const response = generateAIResponse(message);
+                    addChatMessage('AI', response, false);
+                }, 1500);
+            }
+        }
+        
+        function handleQuickResponse(responseText) {
+            const input = document.getElementById('chat-input');
+            input.value = responseText;
+            sendChatMessage();
+        }
+        
+        function addChatMessage(sender, message, isUser) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar ${isUser ? 'user-avatar' : 'einstein-avatar'}">${sender === 'AI' ? '🧠' : sender.charAt(0)}</div>
+                <div class="message-content">
+                    ${message}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function showThinkingIndicator() {
+            const messagesContainer = document.getElementById('chat-messages');
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'chat-message thinking-message';
+            thinkingDiv.innerHTML = `
+                <div class="message-avatar einstein-avatar">🧠</div>
+                <div class="message-content">
+                    <div class="einstein-thinking">
+                        Einstein is thinking
+                        <div class="thinking-dots">
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(thinkingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function removeThinkingIndicator() {
+            const thinkingMessage = document.querySelector('.thinking-message');
+            if (thinkingMessage) {
+                thinkingMessage.remove();
+            }
+        }
+        
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Handle ADHD-specific math lesson request
+            if (lowerMessage.includes('create adhd-friendly math lesson')) {
+                return `<p>I'll create an ADHD-friendly math lesson for you. What grade level is your student?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Kindergarten math')">Kindergarten</button>
+                            <button class="response-button" onclick="handleQuickResponse('Elementary math (1-3)')">Elementary (1-3)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Upper Elementary math (4-5)')">Upper Elementary (4-5)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Middle School math (6-8)')">Middle School (6-8)</button>
+                        </div>`;
+            }
+            
+            // Handle grade selection for ADHD math
+            if (lowerMessage.includes('math') && (lowerMessage.includes('kindergarten') || 
+                lowerMessage.includes('elementary') || lowerMessage.includes('middle school'))) {
+                return `<p>Great! I'll create ADHD-friendly math lessons for that grade level. What specific math topic would you like to focus on?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Numbers and counting')">Numbers & Counting</button>
+                            <button class="response-button" onclick="handleQuickResponse('Addition and subtraction')">Addition/Subtraction</button>
+                            <button class="response-button" onclick="handleQuickResponse('Fractions')">Fractions</button>
+                            <button class="response-button" onclick="handleQuickResponse('Geometry')">Geometry</button>
+                            <button class="response-button" onclick="handleQuickResponse('Algebra concepts')">Algebra Concepts</button>
+                        </div>`;
+            }
+            
+            // Handle math topic selection
+            if (lowerMessage.includes('numbers and counting') || lowerMessage.includes('addition') || 
+                lowerMessage.includes('fractions') || lowerMessage.includes('geometry') || 
+                lowerMessage.includes('algebra')) {
+                return `<p>Perfect! I'll create an ADHD-friendly lesson on ${message.toLowerCase()}. Here's what I'll include:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Movement breaks every 10-15 minutes</li>
+                            <li>Hands-on manipulatives and visual aids</li>
+                            <li>Chunked instructions with clear transitions</li>
+                            <li>Multi-sensory learning activities</li>
+                            <li>Built-in brain breaks and fidget time</li>
+                        </ul>
+                        <div class="response-options">
+                            <button class="response-button" onclick="generateCustomLesson()">Generate Lesson Plan</button>
+                            <button class="response-button" onclick="handleQuickResponse('Add more accommodations')">Add More Accommodations</button>
+                            <button class="response-button" onclick="switchTab('curriculum-builder', document.querySelector('[onclick*=curriculum-builder]'))">Use Curriculum Builder</button>
+                        </div>`;
+            }
+            
+            // Handle NY state standards request
+            if (lowerMessage.includes('find ny state standards') || lowerMessage.includes('new york') || 
+                lowerMessage.includes('ny standards')) {
+                return `<p>I can help you find New York State Learning Standards. What subject area and grade level do you need?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('NY Math standards')">Mathematics</button>
+                            <button class="response-button" onclick="handleQuickResponse('NY ELA standards')">English Language Arts</button>
+                            <button class="response-button" onclick="handleQuickResponse('NY Science standards')">Science</button>
+                            <button class="response-button" onclick="handleQuickResponse('NY Social Studies standards')">Social Studies</button>
+                        </div>`;
+            }
+            
+            // Handle IEP accommodations request
+            if (lowerMessage.includes('generate iep accommodations') || lowerMessage.includes('iep')) {
+                return `<p>I'll help you generate appropriate IEP accommodations. What type of learning needs should I focus on?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('ADHD accommodations')">ADHD</button>
+                            <button class="response-button" onclick="handleQuickResponse('Dyslexia accommodations')">Dyslexia</button>
+                            <button class="response-button" onclick="handleQuickResponse('Autism accommodations')">Autism</button>
+                            <button class="response-button" onclick="handleQuickResponse('Anxiety accommodations')">Anxiety</button>
+                            <button class="response-button" onclick="handleQuickResponse('Multiple needs')">Multiple Needs</button>
+                            <button class="response-button" onclick="handleQuickResponse('Other special needs')">Other</button>
+                        </div>`;
+            }
+            
+            // Handle science experiment request
+            if (lowerMessage.includes('design science experiment') || lowerMessage.includes('science')) {
+                return `<p>I'd be happy to design a science experiment! What grade level is this for?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Elementary science (K-3)')">Elementary (K-3)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Upper Elementary science (4-5)')">Upper Elementary (4-5)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Middle School science (6-8)')">Middle School (6-8)</button>
+                        </div>`;
+            }
+            
+            // Handle general lesson plan creation
+            if (lowerMessage.includes('create a lesson plan') || lowerMessage.includes('lesson plan')) {
+                return `<p>I'll help you create a personalized lesson plan. Let's start with the subject area:</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Math lesson')">Mathematics</button>
+                            <button class="response-button" onclick="handleQuickResponse('Science lesson')">Science</button>
+                            <button class="response-button" onclick="handleQuickResponse('ELA lesson')">English Language Arts</button>
+                            <button class="response-button" onclick="handleQuickResponse('Social Studies lesson')">Social Studies</button>
+                        </div>`;
+            }
+            
+            // Handle subject selection for general lessons
+            if ((lowerMessage.includes('math lesson') || lowerMessage.includes('science lesson') || 
+                lowerMessage.includes('ela lesson') || lowerMessage.includes('social studies lesson')) &&
+                !lowerMessage.includes('adhd')) {
+                const subject = message.split(' lesson')[0];
+                return `<p>Great! I'll create a ${subject} lesson. What grade level is your student?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Kindergarten')">Kindergarten</button>
+                            <button class="response-button" onclick="handleQuickResponse('Elementary (1-3)')">Elementary (1-3)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Upper Elementary (4-5)')">Upper Elementary (4-5)</button>
+                            <button class="response-button" onclick="handleQuickResponse('Middle School (6-8)')">Middle School (6-8)</button>
+                        </div>`;
+            }
+            
+            // Handle grade level selection for general lessons
+            if ((lowerMessage.includes('kindergarten') || lowerMessage.includes('elementary') || 
+                lowerMessage.includes('middle school')) && !lowerMessage.includes('math') && 
+                !lowerMessage.includes('science')) {
+                return `<p>Perfect! Now, how many lessons would you like me to create?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Single lesson')">Single Lesson</button>
+                            <button class="response-button" onclick="handleQuickResponse('1 week of lessons')">1 Week of Lessons</button>
+                            <button class="response-button" onclick="handleQuickResponse('2 weeks of lessons')">2 Weeks of Lessons</button>
+                            <button class="response-button" onclick="handleQuickResponse('Full unit plan')">Full Unit Plan</button>
+                        </div>`;
+            }
+            
+            // Handle lesson duration selection
+            if (lowerMessage.includes('single lesson') || lowerMessage.includes('week of lessons') || 
+                lowerMessage.includes('unit plan')) {
+                return `<p>Excellent choice! Does your student have any special learning needs I should consider?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('ADHD support')">ADHD</button>
+                            <button class="response-button" onclick="handleQuickResponse('Dyslexia support')">Dyslexia</button>
+                            <button class="response-button" onclick="handleQuickResponse('Autism support')">Autism</button>
+                            <button class="response-button" onclick="handleQuickResponse('ELL support')">English Language Learner</button>
+                            <button class="response-button" onclick="handleQuickResponse('Gifted/Advanced')">Gifted/Advanced</button>
+                            <button class="response-button" onclick="handleQuickResponse('No special needs')">No Special Needs</button>
+                            <button class="response-button" onclick="handleQuickResponse('Other special needs')">Other</button>
+                        </div>`;
+            }
+            
+            // Handle specific accommodation selections for IEP
+            if (lowerMessage.includes('adhd accommodations') || lowerMessage.includes('dyslexia accommodations') || 
+                lowerMessage.includes('autism accommodations') || lowerMessage.includes('anxiety accommodations')) {
+                const need = message.split(' accommodations')[0];
+                return `<p>I'll create comprehensive ${need} accommodations for your IEP. Here's what I'll include:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Classroom environment modifications</li>
+                            <li>Instructional accommodations</li>
+                            <li>Testing and assessment accommodations</li>
+                            <li>Behavioral support strategies</li>
+                            <li>Communication supports</li>
+                        </ul>
+                        <div class="response-options">
+                            <button class="response-button" onclick="generateIEPAccommodations('${need}')">Generate IEP Document</button>
+                            <button class="response-button" onclick="handleQuickResponse('Add more needs')">Add Another Need</button>
+                            <button class="response-button" onclick="handleQuickResponse('Consultation preferred')">Request Consultation</button>
+                        </div>`;
+            }
+            
+            // Handle "Add more accommodations" request
+            if (lowerMessage.includes('add more accommodations') || lowerMessage.includes('add more needs')) {
+                return `<p>I can help you implement additional accommodations. What other support does your student need?</p>
+                        <div class="template-grid">
+                            <div class="template-card" onclick="handleQuickResponse('Additional ADHD support')">
+                                <h4>ADHD Support</h4>
+                                <p>Movement breaks, focus strategies, reduced distractions</p>
+                            </div>
+                            <div class="template-card" onclick="handleQuickResponse('Additional dyslexia support')">
+                                <h4>Dyslexia Support</h4>
+                                <p>Reading aids, extra time, oral instructions</p>
+                            </div>
+                            <div class="template-card" onclick="handleQuickResponse('Additional anxiety support')">
+                                <h4>Anxiety Support</h4>
+                                <p>Flexible deadlines, quiet space, check-ins</p>
+                            </div>
+                            <div class="template-card" onclick="handleQuickResponse('Additional autism support')">
+                                <h4>Autism Support</h4>
+                                <p>Visual schedules, routine, sensory breaks</p>
+                            </div>
+                        </div>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Consultation preferred')">Consultation Preferred</button>
+                        </div>`;
+            }
+            
+            // Handle additional support selections - move forward to generate lesson
+            if (lowerMessage.includes('additional') && (lowerMessage.includes('adhd') || 
+                lowerMessage.includes('dyslexia') || lowerMessage.includes('anxiety') || 
+                lowerMessage.includes('autism'))) {
+                const additionalNeed = message.split('Additional ')[1].split(' support')[0];
+                return `<p>I've noted the additional ${additionalNeed} accommodations. Now I'll create your comprehensive lesson plan with all the accommodations we've discussed.</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="generateComprehensiveLesson()">Generate Complete Lesson Plan</button>
+                            <button class="response-button" onclick="handleQuickResponse('Consultation preferred')">Request Consultation</button>
+                        </div>`;
+            }
+            
+            // Handle consultation request
+            if (lowerMessage.includes('consultation preferred') || lowerMessage.includes('consultation')) {
+                return `<p>I understand you'd prefer a personal consultation. Let me connect you with an EduNavigator specialist.</p>
+                        <div style="background-color: #f4f6f9; padding: 20px; border-radius: 8px; margin: 16px 0;">
+                            <h4 style="margin-bottom: 16px;">Request Personal Consultation</h4>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Your Name</label>
+                                <input type="text" class="sf-form-input" id="contact-name" placeholder="Enter your name">
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Email Address</label>
+                                <input type="email" class="sf-form-input" id="contact-email" placeholder="Enter your email">
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Summary of Needs</label>
+                                <textarea class="sf-form-input" id="contact-description" rows="3" placeholder="Brief summary of your requirements..."></textarea>
+                            </div>
+                            <button class="sf-button sf-button-primary" onclick="submitConsultationRequest()">Submit Request</button>
+                        </div>
+                        <p>A specialist will review our conversation and contact you within 24 hours with personalized recommendations.</p>`;
+            }
+            
+            // Handle ADHD-specific requests
+            if (lowerMessage.includes('adhd') && (lowerMessage.includes('math') || lowerMessage.includes('lesson'))) {
+                return `<p>I'll create an ADHD-friendly math lesson for you. Here's what I'll include:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Movement breaks every 15 minutes</li>
+                            <li>Visual aids and color-coding</li>
+                            <li>Hands-on manipulatives</li>
+                            <li>Chunked instructions with checkpoints</li>
+                        </ul>
+                        <p>What specific math topic would you like me to focus on?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Fractions for 5th grade')">Fractions</button>
+                            <button class="response-button" onclick="handleQuickResponse('Multiplication for 3rd grade')">Multiplication</button>
+                            <button class="response-button" onclick="handleQuickResponse('Algebra basics for 7th grade')">Algebra</button>
+                            <button class="response-button" onclick="handleQuickResponse('Geometry for 6th grade')">Geometry</button>
+                        </div>`;
+            }
+            
+            // Handle NY state standards
+            if (lowerMessage.includes('ny') || lowerMessage.includes('new york') || lowerMessage.includes('standards')) {
+                return `<p>I can help you find New York State Learning Standards. Here are the main categories:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Next Generation Learning Standards (NGLS)</li>
+                            <li>NYS P-12 Science Learning Standards</li>
+                            <li>Social Studies Framework</li>
+                            <li>Arts Learning Standards</li>
+                        </ul>
+                        <p>Which subject area interests you?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('NY Math standards for grade 5')">Math Standards</button>
+                            <button class="response-button" onclick="handleQuickResponse('NY ELA standards for grade 7')">ELA Standards</button>
+                            <button class="response-button" onclick="handleQuickResponse('NY Science standards for middle school')">Science Standards</button>
+                            <button class="response-button" onclick="handleQuickResponse('View all NY standards')">View All</button>
+                        </div>`;
+            }
+            
+            // Handle science experiment requests
+            if (lowerMessage.includes('science') || lowerMessage.includes('experiment')) {
+                return `<p>I'd be happy to design a science experiment! Let me know:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Grade level</li>
+                            <li>Science topic or standard</li>
+                            <li>Any special accommodations needed</li>
+                            <li>Available materials</li>
+                        </ul>
+                        <p>What type of science experiment interests you?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Kitchen chemistry experiments')">Kitchen Chemistry</button>
+                            <button class="response-button" onclick="handleQuickResponse('Plant growth experiment')">Life Science</button>
+                            <button class="response-button" onclick="handleQuickResponse('Simple physics demonstrations')">Physics</button>
+                            <button class="response-button" onclick="handleQuickResponse('Weather and climate project')">Earth Science</button>
+                        </div>`;
+            }
+            
+            // Handle special needs selection
+            if (lowerMessage.includes('adhd support') || lowerMessage.includes('autism support') || 
+                lowerMessage.includes('dyslexia support') || lowerMessage.includes('vision support') || 
+                lowerMessage.includes('hearing support') || lowerMessage.includes('general accommodations')) {
+                const need = message.replace(' support', '');
+                return `<p>I'll make sure to include appropriate ${need} accommodations in your lesson plan. Here's what I'll incorporate:</p>
+                        <ul style="margin: 12px 0;">
+                            <li>Structured format with clear transitions</li>
+                            <li>Multi-sensory learning activities</li>
+                            <li>Modified instructions and materials</li>
+                            <li>Built-in breaks and support strategies</li>
+                        </ul>
+                        <p>Would you like me to generate your customized lesson plan now?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="generateCustomLesson()">Generate Lesson Plan</button>
+                            <button class="response-button" onclick="handleQuickResponse('Add more specifications')">Add More Details</button>
+                            <button class="response-button" onclick="switchTab('curriculum-builder', document.querySelector('[onclick*=curriculum-builder]'))">Use Curriculum Builder</button>
+                        </div>`;
+            }
+            
+            // Handler for "Other special needs" - show contact form
+            if (lowerMessage.includes('other special needs') || (lowerMessage.includes('other') && lowerMessage.includes('needs'))) {
+                return `<p>I understand your student has unique learning needs. For personalized support, I'd like to connect you with an EduNavigator specialist who can create a custom curriculum plan.</p>
+                        <div style="background-color: #f4f6f9; padding: 20px; border-radius: 8px; margin: 16px 0;">
+                            <h4 style="margin-bottom: 16px;">Contact an EduNavigator Associate</h4>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Your Name</label>
+                                <input type="text" class="sf-form-input" id="contact-name" placeholder="Enter your name">
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Email Address</label>
+                                <input type="email" class="sf-form-input" id="contact-email" placeholder="Enter your email">
+                            </div>
+                            <div class="sf-form-element">
+                                <label class="sf-form-label">Brief Description of Needs</label>
+                                <textarea class="sf-form-input" id="contact-description" rows="3" placeholder="Tell us about your student's specific needs..."></textarea>
+                            </div>
+                            <button class="sf-button sf-button-primary" onclick="submitContactForm()">Submit Request</button>
+                        </div>
+                        <p>An EduNavigator specialist will contact you within 24 hours.</p>`;
+            }
+            
+            // Default response
+            return `<p>I understand you're looking for curriculum support. I can help with:</p>
+                    <ul style="margin: 12px 0;">
+                        <li>Creating personalized lesson plans</li>
+                        <li>Finding state standards</li>
+                        <li>Implementing IEP/504 accommodations</li>
+                        <li>Designing hands-on activities</li>
+                    </ul>
+                    <p>What would you like to start with?</p>
+                    <div class="response-options">
+                        <button class="response-button" onclick="handleQuickResponse('Create a lesson plan')">Create Lesson Plan</button>
+                        <button class="response-button" onclick="handleQuickResponse('Find state standards')">Find Standards</button>
+                        <button class="response-button" onclick="handleQuickResponse('Add accommodations')">Add Accommodations</button>
+                        <button class="response-button" onclick="handleQuickResponse('Browse templates')">Browse Templates</button>
+                    </div>`;
+        }
+        
+        function insertTemplate(templateType) {
+            const input = document.getElementById('chat-input');
+            
+            const templates = {
+                'ADHD math lesson': 'Create a 5th grade math lesson on fractions for a student with ADHD. Include movement breaks, visual aids, and hands-on activities.',
+                'Dyslexia reading': 'Design a reading comprehension lesson for a 4th grader with dyslexia using Orton-Gillingham approach.',
+                'IEP accommodations': 'Generate IEP accommodations for a middle school student with ADHD and anxiety.',
+                'NY standards': 'Find New York State Learning Standards for 5th grade mathematics, specifically fractions and decimals.'
+            };
+            
+            input.value = templates[templateType] || `Help me with ${templateType}`;
+            input.focus();
+        }
+        
+        // Curriculum Builder functionality
+        function generateCurriculum() {
+            const studentName = document.getElementById('student-name').value;
+            const gradeLevel = document.getElementById('grade-level').value;
+            const subject = document.getElementById('subject').value;
+            const state = document.getElementById('state').value;
+            
+            // Get selected accommodations
+            const accommodations = [];
+            if (document.getElementById('iep').checked) accommodations.push('IEP');
+            if (document.getElementById('504').checked) accommodations.push('504 Plan');
+            if (document.getElementById('adhd').checked) accommodations.push('ADHD');
+            if (document.getElementById('autism').checked) accommodations.push('Autism');
+            if (document.getElementById('dyslexia').checked) accommodations.push('Dyslexia');
+            if (document.getElementById('ell').checked) accommodations.push('ELL');
+            
+            // Show loading
+            const previewDiv = document.getElementById('curriculum-preview');
+            previewDiv.style.display = 'block';
+            previewDiv.innerHTML = '<p>Generating curriculum...</p>';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Generate content based on subject
+                let lessonTitle, standards, activities, accommodationsList;
+                
+                switch(subject) {
+                    case 'Mathematics':
+                        lessonTitle = gradeLevel === '7th Grade' ? 'Solving Linear Equations' : 'Understanding Fractions';
+                        standards = '<span class="standard-tag">NY-7.EE.4</span><span class="standard-tag">CCSS.MATH.7.EE.B.4</span>';
+                        activities = `
+                            <li><strong>Warm-up (5 min):</strong> Number pattern puzzle with movement</li>
+                            <li><strong>Introduction (10 min):</strong> Visual equation balance demonstrations</li>
+                            <li><strong>Guided Practice (15 min):</strong> Solving equations with algebra tiles</li>
+                            <li><strong>Movement Break (5 min):</strong> Equation relay race</li>
+                            <li><strong>Independent Practice (10 min):</strong> Modified worksheet (5 problems)</li>
+                            <li><strong>Cool-down (5 min):</strong> Exit ticket with peer discussion</li>
+                        `;
+                        break;
+                    
+                    case 'English Language Arts':
+                        lessonTitle = gradeLevel === '7th Grade' ? 'Analyzing Character Development' : 'Reading Comprehension Strategies';
+                        standards = '<span class="standard-tag">NY-7.RL.3</span><span class="standard-tag">CCSS.ELA-LITERACY.RL.7.3</span>';
+                        activities = `
+                            <li><strong>Warm-up (5 min):</strong> Character trait charades</li>
+                            <li><strong>Introduction (10 min):</strong> Interactive character map on board</li>
+                            <li><strong>Guided Reading (15 min):</strong> Annotating text for character changes</li>
+                            <li><strong>Movement Break (5 min):</strong> Act out character emotions</li>
+                            <li><strong>Group Discussion (10 min):</strong> Character development timeline</li>
+                            <li><strong>Reflection (5 min):</strong> Quick write on character growth</li>
+                        `;
+                        break;
+                    
+                    case 'Science':
+                        lessonTitle = gradeLevel === '7th Grade' ? 'Cell Structure and Function' : 'States of Matter';
+                        standards = '<span class="standard-tag">NY-MS-LS1-2</span><span class="standard-tag">NGSS MS-LS1-2</span>';
+                        activities = `
+                            <li><strong>Warm-up (5 min):</strong> Cell part matching game with movement</li>
+                            <li><strong>Introduction (10 min):</strong> 3D cell model exploration</li>
+                            <li><strong>Lab Activity (15 min):</strong> Microscope observation of cells</li>
+                            <li><strong>Movement Break (5 min):</strong> Human cell simulation activity</li>
+                            <li><strong>Data Recording (10 min):</strong> Draw and label observed cells</li>
+                            <li><strong>Wrap-up (5 min):</strong> Share findings with partner</li>
+                        `;
+                        break;
+                    
+                    case 'Social Studies':
+                        lessonTitle = gradeLevel === '7th Grade' ? 'Ancient Civilizations: Egypt' : 'Community Helpers';
+                        standards = '<span class="standard-tag">NY-SS.7.2</span><span class="standard-tag">NCSS.I.CULTURE</span>';
+                        activities = `
+                            <li><strong>Warm-up (5 min):</strong> Ancient Egypt picture walk</li>
+                            <li><strong>Introduction (10 min):</strong> Interactive timeline creation</li>
+                            <li><strong>Research Activity (15 min):</strong> Explore Egyptian artifacts</li>
+                            <li><strong>Movement Break (5 min):</strong> Walk like an Egyptian</li>
+                            <li><strong>Creative Project (10 min):</strong> Design a pyramid diagram</li>
+                            <li><strong>Presentation (5 min):</strong> Share one interesting fact</li>
+                        `;
+                        break;
+                    
+                    default:
+                        lessonTitle = 'Custom Lesson Plan';
+                        standards = '<span class="standard-tag">Standards pending</span>';
+                        activities = '<li>Activities will be customized based on subject selection</li>';
+                }
+                
+                // Generate accommodation-specific strategies
+                if (accommodations.includes('ADHD')) {
+                    accommodationsList = `
+                        <li>Movement break every 15 minutes</li>
+                        <li>Visual aids and graphic organizers</li>
+                        <li>Chunked instructions with checkpoints</li>
+                        <li>Fidget tools allowed during instruction</li>
+                        <li>Preferential seating near teacher</li>
+                    `;
+                } else if (accommodations.includes('Dyslexia')) {
+                    accommodationsList = `
+                        <li>Text-to-speech for reading materials</li>
+                        <li>Extended time for reading tasks</li>
+                        <li>Colored overlays for text</li>
+                        <li>Larger font size on materials</li>
+                        <li>Oral responses allowed</li>
+                    `;
+                } else if (accommodations.includes('Autism')) {
+                    accommodationsList = `
+                        <li>Visual schedule for lesson structure</li>
+                        <li>Clear routine and transitions</li>
+                        <li>Sensory breaks as needed</li>
+                        <li>Reduced sensory stimuli</li>
+                        <li>Written instructions with visuals</li>
+                    `;
+                } else if (accommodations.includes('ELL')) {
+                    accommodationsList = `
+                        <li>Bilingual word walls</li>
+                        <li>Picture supports for vocabulary</li>
+                        <li>Simplified language in instructions</li>
+                        <li>Peer translation support</li>
+                        <li>Extended time for language processing</li>
+                    `;
+                } else {
+                    accommodationsList = `
+                        <li>Differentiated instruction</li>
+                        <li>Multiple means of representation</li>
+                        <li>Flexible grouping strategies</li>
+                        <li>Choice in assessment methods</li>
+                        <li>Regular check-ins for understanding</li>
+                    `;
+                }
+                
+                // Update preview with actual content
+                previewDiv.innerHTML = `
+                    <h2>Generated Curriculum Preview</h2>
+                    <div class="curriculum-section">
+                        <h3>Lesson Plan: ${lessonTitle}</h3>
+                        <p><strong>Student:</strong> <span id="preview-student">${studentName}</span></p>
+                        <p><strong>Grade:</strong> <span id="preview-grade">${gradeLevel}</span></p>
+                        <p><strong>Subject:</strong> <span id="preview-subject">${subject}</span></p>
+                        <p><strong>Standards:</strong></p>
+                        <div style="margin-left: 20px;">
+                            ${standards}
+                        </div>
+                    </div>
+                    
+                    <div class="curriculum-section">
+                        <h3>${accommodations.length > 0 ? accommodations.join(', ') : 'General'} Accommodations</h3>
+                        <ul>
+                            ${accommodationsList}
+                        </ul>
+                    </div>
+                    
+                    <div class="curriculum-section">
+                        <h3>Lesson Activities</h3>
+                        <ol>
+                            ${activities}
+                        </ol>
+                    </div>
+                    
+                    <button class="sf-button sf-button-primary" onclick="downloadCurriculum()">Download PDF</button>
+                    <button class="sf-button sf-button-secondary" onclick="editCurriculum()">Edit Curriculum</button>
+                `;
+            }, 2000);
+        }
+        
+        // Setup Assistant functionality
+        function loadStateStandards() {
+            const state = document.getElementById('setup-state').value;
+            const infoDiv = document.getElementById('state-standards-info');
+            
+            if (state === 'NY') {
+                infoDiv.style.display = 'block';
+                // Update progress
+                document.getElementById('progress-fill').style.width = '50%';
+            }
+        }
+        
+        function proceedToStep3() {
+            // Update progress
+            document.getElementById('progress-fill').style.width = '75%';
+            // In a real app, this would navigate to the next step
+            alert('Proceeding to Student Profiles...');
+        }
+        
+        // Publishing functionality
+        function selectPublishOption(option, element) {
+            // Remove selection from all options
+            document.querySelectorAll('.publish-option').forEach(opt => {
+                opt.style.border = '2px solid #dddbda';
+            });
+            
+            // Highlight selected option
+            element.style.border = '2px solid #0070d2';
+            
+            // Show deployment details
+            const detailsDiv = document.getElementById('deployment-details');
+            if (option === 'experience') {
+                detailsDiv.style.display = 'block';
+            }
+        }
+        
+        function startDeployment() {
+            // Simulate deployment
+            document.getElementById('deployment-success').style.display = 'block';
+        }
+        
+        // Template functionality
+        function useTemplate(templateElement) {
+            const exampleText = templateElement.querySelector('.prompt-template-example').textContent.trim();
+            
+            // Switch to chat tab
+            const chatTab = document.querySelector('[onclick*="chat"]');
+            switchTab('chat', chatTab);
+            
+            // Insert template into chat
+            document.getElementById('chat-input').value = exampleText;
+        }
+        
+        // Helper functions
+        function editCurriculum() {
+            alert('Opening curriculum editor...');
+        }
+        
+        function downloadGuide() {
+            // Create setup guide content
+            const guideContent = `
+                <h1>EduNavigator Setup Guide</h1>
+                <h2>Getting Started</h2>
+                <p>Welcome to EduNavigator! This guide will help you set up your Einstein AI-powered curriculum assistant.</p>
+                
+                <h3>Step 1: Basic Configuration</h3>
+                <p>Configure your organization settings and preferences.</p>
+                
+                <h3>Step 2: State Standards</h3>
+                <p>Select your state to automatically load relevant educational standards.</p>
+                
+                <h3>Step 3: Student Profiles</h3>
+                <p>Create profiles for your students including their learning needs.</p>
+                
+                <h3>Step 4: AI Training</h3>
+                <p>Customize Einstein AI responses to match your teaching style.</p>
+                
+                <p>For support, contact support@edunavigator.com</p>
+            `;
+            
+            // Create and download the guide
+            const blob = new Blob([guideContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'edunavigator-setup-guide.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Setup guide has been downloaded successfully!');
+        }
+        
+        function showCreateTemplateModal() {
+            alert('Opening template creator...');
+        }
+        
+        // Handle comprehensive lesson generation
+        function generateComprehensiveLesson() {
+            showThinkingIndicator();
+            setTimeout(() => {
+                removeThinkingIndicator();
+                const response = `<p>I've generated a comprehensive lesson plan based on all your requirements:</p>
+                        <div style="background-color: #f4f6f9; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                            <h4>Customized Lesson Plan</h4>
+                            <p><strong>Subject:</strong> Mathematics</p>
+                            <p><strong>Grade:</strong> 5th Grade</p>
+                            <p><strong>Topic:</strong> Understanding Fractions</p>
+                            <p><strong>Duration:</strong> 45 minutes</p>
+                            <p><strong>Accommodations Included:</strong></p>
+                            <ul style="margin: 12px 0;">
+                                <li>ADHD: Movement breaks, hands-on activities, chunked instructions</li>
+                                <li>Additional supports based on your selections</li>
+                                <li>Multi-sensory learning approaches</li>
+                                <li>Flexible pacing and assessment options</li>
+                            </ul>
+                        </div>
+                        <p>Your complete lesson plan includes all the accommodations we discussed and is ready for download.</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="downloadLesson()">Download Complete Lesson</button>
+                            <button class="response-button" onclick="switchTab('curriculum-builder', document.querySelector('[onclick*=curriculum-builder]'))">View in Curriculum Builder</button>
+                            <button class="response-button" onclick="handleQuickResponse('Create another lesson')">Create Another Lesson</button>
+                        </div>`;
+                addChatMessage('AI', response, false);
+            }, 2000);
+        }
+        
+        // Handle IEP accommodations generation
+        function generateIEPAccommodations(needType) {
+            showThinkingIndicator();
+            setTimeout(() => {
+                removeThinkingIndicator();
+                const response = `<p>I've generated comprehensive ${needType} accommodations for your IEP:</p>
+                        <div style="background-color: #f4f6f9; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                            <h4>${needType.toUpperCase()} IEP Accommodations</h4>
+                            <ul style="margin: 12px 0;">
+                                <li><strong>Classroom Environment:</strong> Preferential seating, reduced distractions, quiet workspace option</li>
+                                <li><strong>Instruction:</strong> Break tasks into smaller steps, provide visual schedules, allow movement breaks</li>
+                                <li><strong>Assessment:</strong> Extended time (1.5x), separate testing location, frequent breaks</li>
+                                <li><strong>Organization:</strong> Color-coded materials, daily check-ins, written instructions</li>
+                                <li><strong>Behavioral Support:</strong> Positive reinforcement system, self-monitoring tools</li>
+                            </ul>
+                        </div>
+                        <div class="response-options">
+                            <button class="response-button" onclick="downloadIEP()">Download IEP Document</button>
+                            <button class="response-button" onclick="handleQuickResponse('Add more needs')">Add Another Need</button>
+                            <button class="response-button" onclick="switchTab('curriculum-builder', document.querySelector('[onclick*=curriculum-builder]'))">Go to Curriculum Builder</button>
+                        </div>`;
+                addChatMessage('AI', response, false);
+            }, 2000);
+        }
+        
+        // Handle consultation submission
+        function submitConsultationRequest() {
+            const name = document.getElementById('contact-name').value;
+            const email = document.getElementById('contact-email').value;
+            const description = document.getElementById('contact-description').value;
+            
+            if (name && email && description) {
+                showThinkingIndicator();
+                setTimeout(() => {
+                    removeThinkingIndicator();
+                    const response = `<p>Thank you for requesting a consultation!</p>
+                            <div style="background-color: #d4edda; color: #155724; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                                <strong>Consultation Request Received</strong>
+                                <p>We've recorded your request and will have a specialist contact you within 24 hours.</p>
+                                <ul style="margin: 12px 0;">
+                                    <li>Reference #: EDU-${Math.floor(Math.random() * 10000)}</li>
+                                    <li>Expected response: Within 24 hours</li>
+                                    <li>Your email: ${email}</li>
+                                </ul>
+                            </div>
+                            <p>While you wait, would you like me to generate a preliminary lesson plan based on our conversation?</p>
+                            <div class="response-options">
+                                <button class="response-button" onclick="generateComprehensiveLesson()">Generate Preliminary Plan</button>
+                                <button class="response-button" onclick="handleQuickResponse('Browse templates')">Browse Templates</button>
+                                <button class="response-button" onclick="switchTab('home', document.querySelector('[onclick*=home]'))">Return to Home</button>
+                            </div>`;
+                    addChatMessage('AI', response, false);
+                }, 1500);
+            } else {
+                alert('Please fill in all fields before submitting.');
+            }
+        }
+        
+        // Helper functions for downloads
+        function downloadLesson() {
+            alert('Downloading complete lesson plan as PDF...');
+        }
+        
+        function downloadIEP() {
+            alert('Downloading IEP accommodations document...');
+        }
+        
+        // Handle custom lesson generation
+        function generateCustomLesson() {
+            showThinkingIndicator();
+            setTimeout(() => {
+                removeThinkingIndicator();
+                const response = `<p>I've generated a customized lesson plan based on your specifications. Here's a preview:</p>
+                        <div style="background-color: #f4f6f9; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                            <h4>Lesson Plan: Introduction to Fractions</h4>
+                            <p><strong>Grade:</strong> 5th Grade</p>
+                            <p><strong>Duration:</strong> 45 minutes</p>
+                            <p><strong>Accommodations:</strong> ADHD Support</p>
+                            <ul style="margin: 12px 0;">
+                                <li>Movement break every 15 minutes</li>
+                                <li>Visual fraction models</li>
+                                <li>Hands-on manipulatives</li>
+                                <li>Chunked instructions</li>
+                            </ul>
+                        </div>
+                        <div class="response-options">
+                            <button class="response-button" onclick="viewFullLesson()">View Full Lesson</button>
+                            <button class="response-button" onclick="downloadLessonPDF()">Download PDF</button>
+                            <button class="response-button" onclick="handleQuickResponse('Create another lesson')">Create Another Lesson</button>
+                        </div>`;
+                addChatMessage('AI', response, false);
+            }, 2000);
+        }
+        
+        // Function to view full lesson in Curriculum Builder
+        function viewFullLesson() {
+            // Switch to Curriculum Builder tab
+            const curriculumTab = document.querySelector('[onclick*="curriculum-builder"]');
+            switchTab('curriculum-builder', curriculumTab);
+            
+            // Populate the form with data from the chat
+            document.getElementById('student-name').value = 'Student from Chat';
+            document.getElementById('grade-level').value = '5th Grade';
+            document.getElementById('subject').value = 'Mathematics';
+            document.getElementById('state').value = 'New York';
+            
+            // Check ADHD accommodation
+            document.getElementById('adhd').checked = true;
+            
+            // Generate the curriculum automatically
+            generateCurriculum();
+        }
+        
+        // Function to download lesson as PDF
+        function downloadLessonPDF() {
+            // Create a simple HTML content for the lesson
+            const lessonContent = `
+                <h1>Lesson Plan: Introduction to Fractions</h1>
+                <p><strong>Grade:</strong> 5th Grade</p>
+                <p><strong>Duration:</strong> 45 minutes</p>
+                <p><strong>Subject:</strong> Mathematics</p>
+                <h2>ADHD Accommodations</h2>
+                <ul>
+                    <li>Movement break every 15 minutes</li>
+                    <li>Visual fraction models</li>
+                    <li>Hands-on manipulatives</li>
+                    <li>Chunked instructions</li>
+                </ul>
+                <h2>Lesson Activities</h2>
+                <ol>
+                    <li>Warm-up (5 min): Physical movement with fraction poses</li>
+                    <li>Introduction (10 min): Visual presentation with pizza models</li>
+                    <li>Guided Practice (15 min): Hands-on fraction tiles</li>
+                    <li>Movement Break (5 min): Fraction dance activity</li>
+                    <li>Independent Practice (10 min): Modified worksheet</li>
+                    <li>Cool-down (5 min): Review game</li>
+                </ol>
+            `;
+            
+            // Create a blob with the content
+            const blob = new Blob([lessonContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create a temporary anchor element and trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lesson-plan.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show success message
+            alert('Lesson plan has been downloaded successfully!');
+        }
+        
+        // Updated helper functions for downloads
+        function downloadLesson() {
+            downloadLessonPDF();
+        }
+        
+        function downloadIEP() {
+            // Create IEP document content
+            const iepContent = `
+                <h1>IEP Accommodations Document</h1>
+                <p><strong>Student:</strong> [Student Name]</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                
+                <h2>Classroom Environment</h2>
+                <ul>
+                    <li>Preferential seating near teacher</li>
+                    <li>Reduced visual distractions</li>
+                    <li>Quiet workspace option available</li>
+                </ul>
+                
+                <h2>Instructional Accommodations</h2>
+                <ul>
+                    <li>Break tasks into smaller steps</li>
+                    <li>Provide visual schedules and timers</li>
+                    <li>Allow movement breaks every 15-20 minutes</li>
+                    <li>Use multi-sensory teaching approaches</li>
+                </ul>
+                
+                <h2>Assessment Accommodations</h2>
+                <ul>
+                    <li>Extended time (1.5x standard time)</li>
+                    <li>Separate testing location if needed</li>
+                    <li>Frequent breaks during testing</li>
+                    <li>Oral reading of directions</li>
+                </ul>
+            `;
+            
+            // Create a blob and download
+            const blob = new Blob([iepContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'iep-accommodations.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('IEP accommodations document has been downloaded successfully!');
+        }
+        
+        function downloadCurriculum() {
+            // Get the curriculum preview content
+            const curriculumContent = document.getElementById('curriculum-preview').innerHTML;
+            
+            // Create a blob and download
+            const blob = new Blob([curriculumContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'curriculum-plan.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Curriculum plan has been downloaded successfully!');
+        }
+        
+        // Enter key support for chat
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
