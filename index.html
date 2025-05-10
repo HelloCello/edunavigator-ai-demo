@@ -5,7 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduNavigator - Salesforce Einstein AI for Education</title>
     <style>
-        * {
+        // Test function to check if everything is working
+        function testNavigation() {
+            console.log('Testing navigation...');
+            const tabs = document.querySelectorAll('.sf-nav-item');
+            console.log('Found tabs:', tabs.length);
+            tabs.forEach((tab, index) => {
+                console.log(`Tab ${index}:`, tab.textContent, tab.onclick);
+            });
+        }
+        
+        // Add to window for debugging
+        window.testNavigation = testNavigation;
+        window.skipOnboarding = skipOnboarding;// Enter key support for chat
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+        });* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -1036,7 +1058,15 @@
                                             <button class="response-button" onclick="handleQuickResponse('Find NY state standards')">Find NY state standards</button>
                                             <button class="response-button" onclick="handleQuickResponse('Generate IEP accommodations')">Generate IEP accommodations</button>
                                             <button class="response-button" onclick="handleQuickResponse('Design science experiment')">Design science experiment</button>
-                                        </div>
+                                        <div class="sf-form-element">
+                                    <label class="sf-form-label">User Profile</label>
+                                    <button class="sf-button sf-button-secondary" onclick="viewUserProfile()">View My Profile</button>
+                                    <button class="sf-button sf-button-secondary" onclick="editUserProfile()">Edit Profile</button>
+                                </div>
+                                <div class="sf-form-element">
+                                    <label class="sf-form-label">Reset Settings</label>
+                                    <button class="sf-button sf-button-secondary" onclick="resetUserProfile()">Reset Profile</button>
+                                </div>
                                     </div>
                                 </div>
                             </div>
@@ -1129,25 +1159,414 @@
     </div>
 
     <script>
+        // Check if user has completed onboarding
+        window.addEventListener('DOMContentLoaded', () => {
+            const userProfile = localStorage.getItem('eduNavigatorProfile');
+            const skipOnboarding = localStorage.getItem('skipOnboarding');
+            
+            if (!userProfile && !skipOnboarding) {
+                showOnboarding();
+            } else {
+                // Apply user preferences throughout the site
+                applyUserPreferences();
+            }
+            
+            // Ensure chat input has event listener
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
+        });
+        
+        // Function to show onboarding
+        function showOnboarding() {
+            const onboardingOverlay = document.createElement('div');
+            onboardingOverlay.id = 'onboarding-overlay';
+            onboardingOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+            
+            const onboardingContainer = document.createElement('div');
+            onboardingContainer.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            `;
+            
+            onboardingContainer.innerHTML = `
+                <div style="background-color: #0070d2; color: white; padding: 24px; border-radius: 8px 8px 0 0; position: relative;">
+                    <button onclick="skipOnboarding()" style="position: absolute; right: 24px; top: 24px; background: transparent; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+                    <h2 style="margin: 0;">Welcome to EduNavigator</h2>
+                    <p style="margin: 8px 0 0 0;">Let's personalize your experience</p>
+                </div>
+                
+                <div id="onboarding-content" style="padding: 24px;">
+                    <!-- Step 1: Educational Approach -->
+                    <div id="step-1" class="onboarding-step">
+                        <h3>What is your desired educational approach?</h3>
+                        <p>This helps us customize curriculum and standards to match your philosophy.</p>
+                        
+                        <div style="display: grid; gap: 12px; margin-top: 16px;">
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="public-school" style="margin-right: 8px;">
+                                <strong>Public School Standards</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Common Core and state standards aligned</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="private-school" style="margin-right: 8px;">
+                                <strong>Private School Standards</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Advanced academics with enrichment focus</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="religious" style="margin-right: 8px;">
+                                <strong>Religious Education</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Faith-based curriculum with moral development</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="montessori" style="margin-right: 8px;">
+                                <strong>Montessori Method</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Self-directed, hands-on learning</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="waldorf" style="margin-right: 8px;">
+                                <strong>Waldorf/Steiner</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Arts-integrated, developmentally appropriate</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="unschooling" style="margin-right: 8px;">
+                                <strong>Unschooling</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Interest-led, experiential learning</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="special-interest" style="margin-right: 8px;">
+                                <strong>Special Interest</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Focused on specific talents or interests</p>
+                            </label>
+                            
+                            <label class="approach-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="approach" value="other" style="margin-right: 8px;">
+                                <strong>Other</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Custom or eclectic approach</p>
+                            </label>
+                        </div>
+                        
+                        <button class="sf-button sf-button-primary" style="margin-top: 24px; width: 100%;" onclick="nextOnboardingStep(1)">Continue</button>
+                    </div>
+                    
+                    <!-- Step 2: Grade Level -->
+                    <div id="step-2" class="onboarding-step" style="display: none;">
+                        <h3>What grade level or age are your learners?</h3>
+                        <p>This helps us provide age-appropriate content and standards.</p>
+                        
+                        <div style="margin-top: 16px;">
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="preschool" style="margin-right: 8px;">
+                                Preschool (Ages 3-4)
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="kindergarten" style="margin-right: 8px;">
+                                Kindergarten (Age 5)
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="elementary" style="margin-right: 8px;">
+                                Elementary (Grades 1-5)
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="middle" style="margin-right: 8px;">
+                                Middle School (Grades 6-8)
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="high" style="margin-right: 8px;">
+                                High School (Grades 9-12)
+                            </label>
+                            
+                            <label style="display: block; margin-bottom: 16px;">
+                                <input type="checkbox" name="grade" value="mixed" style="margin-right: 8px;">
+                                Mixed Ages
+                            </label>
+                        </div>
+                        
+                        <div style="margin-top: 24px; display: flex; gap: 12px;">
+                            <button class="sf-button sf-button-secondary" style="flex: 1;" onclick="previousOnboardingStep(2)">Back</button>
+                            <button class="sf-button sf-button-primary" style="flex: 1;" onclick="nextOnboardingStep(2)">Continue</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Experience Level -->
+                    <div id="step-3" class="onboarding-step" style="display: none;">
+                        <h3>What's your experience level as a homeschool leader?</h3>
+                        <p>This helps us provide the right level of guidance and support.</p>
+                        
+                        <div style="display: grid; gap: 12px; margin-top: 16px;">
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="none" style="margin-right: 8px;">
+                                <strong>No Teaching Experience</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">New to homeschooling and teaching</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="some" style="margin-right: 8px;">
+                                <strong>Some Experience</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">1-3 years of homeschooling experience</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="expert" style="margin-right: 8px;">
+                                <strong>Expert</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">4+ years of homeschooling experience</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="administrator" style="margin-right: 8px;">
+                                <strong>Administrator</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Professional education administrator</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="paraprofessional" style="margin-right: 8px;">
+                                <strong>Paraprofessional</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Teaching assistant or aide background</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="other-role" style="margin-right: 8px;">
+                                <strong>Other Role</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">Different educational background</p>
+                            </label>
+                            
+                            <label class="experience-option" style="display: block; padding: 16px; border: 2px solid #dddbda; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="experience" value="na" style="margin-right: 8px;">
+                                <strong>None of the above describes my role</strong>
+                                <p style="margin: 4px 0 0 24px; color: #706e6b; font-size: 14px;">I have a unique situation</p>
+                            </label>
+                        </div>
+                        
+                        <div style="margin-top: 24px; display: flex; gap: 12px;">
+                            <button class="sf-button sf-button-secondary" style="flex: 1;" onclick="previousOnboardingStep(3)">Back</button>
+                            <button class="sf-button sf-button-primary" style="flex: 1;" onclick="completeOnboarding()">Get Started</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            onboardingOverlay.appendChild(onboardingContainer);
+            document.body.appendChild(onboardingOverlay);
+            
+            // Add event listeners for radio button styling
+            document.querySelectorAll('.approach-option, .experience-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    this.parentElement.querySelectorAll('label').forEach(label => {
+                        label.style.borderColor = '#dddbda';
+                        label.style.backgroundColor = 'white';
+                    });
+                    if (this.querySelector('input[type="radio"]').checked) {
+                        this.style.borderColor = '#0070d2';
+                        this.style.backgroundColor = '#f4f6f9';
+                    }
+                });
+            });
+        }
+        
+        // Function to handle onboarding navigation
+        function nextOnboardingStep(currentStep) {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+            
+            if (currentStep === 1) {
+                const selectedApproach = document.querySelector('input[name="approach"]:checked');
+                if (!selectedApproach) {
+                    alert('Please select an educational approach');
+                    return;
+                }
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+            } else if (currentStep === 2) {
+                const selectedGrades = document.querySelectorAll('input[name="grade"]:checked');
+                if (selectedGrades.length === 0) {
+                    alert('Please select at least one grade level');
+                    return;
+                }
+                step2.style.display = 'none';
+                step3.style.display = 'block';
+            }
+        }
+        
+        function previousOnboardingStep(currentStep) {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+            
+            if (currentStep === 2) {
+                step2.style.display = 'none';
+                step1.style.display = 'block';
+            } else if (currentStep === 3) {
+                step3.style.display = 'none';
+                step2.style.display = 'block';
+            }
+        }
+        
+        // Function to complete onboarding
+        function completeOnboarding() {
+            const selectedApproach = document.querySelector('input[name="approach"]:checked');
+            const selectedGrades = document.querySelectorAll('input[name="grade"]:checked');
+            const selectedExperience = document.querySelector('input[name="experience"]:checked');
+            
+            if (!selectedExperience) {
+                alert('Please select your experience level');
+                return;
+            }
+            
+            // Store user preferences
+            const userProfile = {
+                approach: selectedApproach.value,
+                grades: Array.from(selectedGrades).map(input => input.value),
+                experience: selectedExperience.value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('eduNavigatorProfile', JSON.stringify(userProfile));
+            
+            // Remove onboarding overlay
+            document.getElementById('onboarding-overlay').remove();
+            
+            // Apply preferences
+            applyUserPreferences();
+            
+            // Show welcome message
+            showWelcomeMessage(userProfile);
+        }
+        
+        // Function to apply user preferences throughout the site
+        function applyUserPreferences() {
+            const userProfile = JSON.parse(localStorage.getItem('eduNavigatorProfile') || '{}');
+            
+            if (userProfile.approach) {
+                // Update Einstein AI behavior
+                window.userEducationalApproach = userProfile.approach;
+                window.userGradeLevels = userProfile.grades;
+                window.userExperience = userProfile.experience;
+                
+                // Update standards selection if on that page
+                if (document.querySelector('.standards-grid')) {
+                    const approachCard = document.querySelector(`[onclick*="${userProfile.approach}"]`);
+                    if (approachCard) {
+                        approachCard.style.border = '2px solid #0070d2';
+                        approachCard.style.backgroundColor = '#f4f6f9';
+                    }
+                }
+                
+                // Pre-populate forms
+                if (document.getElementById('grade-level')) {
+                    // Set default grade based on user's selection
+                    const gradeMap = {
+                        'elementary': '3rd Grade',
+                        'middle': '7th Grade',
+                        'high': '10th Grade',
+                        'kindergarten': 'Kindergarten'
+                    };
+                    const defaultGrade = gradeMap[userProfile.grades[0]] || '5th Grade';
+                    document.getElementById('grade-level').value = defaultGrade;
+                }
+            }
+        }
+        
+        // Function to show welcome message
+        function showWelcomeMessage(userProfile) {
+            const approachNames = {
+                'public-school': 'Public School Standards',
+                'private-school': 'Private School Standards',
+                'religious': 'Religious Education',
+                'montessori': 'Montessori Method',
+                'waldorf': 'Waldorf/Steiner',
+                'unschooling': 'Unschooling',
+                'special-interest': 'Special Interest',
+                'other': 'Custom Approach'
+            };
+            
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #d4edda;
+                color: #155724;
+                padding: 16px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                z-index: 9999;
+                max-width: 300px;
+            `;
+            
+            welcomeDiv.innerHTML = `
+                <h4 style="margin: 0 0 8px 0;">Welcome to EduNavigator!</h4>
+                <p style="margin: 0;">Your profile has been set up for ${approachNames[userProfile.approach]}. 
+                Einstein AI will now customize all recommendations based on your preferences.</p>
+                <button class="sf-button sf-button-primary" style="margin-top: 12px;" onclick="this.parentElement.remove()">Got it!</button>
+            `;
+            
+            document.body.appendChild(welcomeDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (welcomeDiv.parentElement) {
+                    welcomeDiv.remove();
+                }
+            }, 10000);
+        }
+        
         // Tab switching
         function switchTab(tabName, element) {
-            // Remove active class from all nav items
-            document.querySelectorAll('.sf-nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to clicked nav item
-            element.classList.add('active');
-            
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // Show selected tab content
-            const tabContent = document.getElementById(tabName + '-content');
-            if (tabContent) {
-                tabContent.classList.add('active');
+            // Prevent any event bubbling issues
+            if (element && element.tagName === 'LI') {
+                // Remove active class from all nav items
+                document.querySelectorAll('.sf-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                element.classList.add('active');
+                
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show selected tab content
+                const tabContent = document.getElementById(tabName + '-content');
+                if (tabContent) {
+                    tabContent.classList.add('active');
+                    console.log('Switched to tab:', tabName);
+                } else {
+                    console.error('Tab content not found:', tabName + '-content');
+                }
             }
         }
         
@@ -1802,16 +2221,128 @@
         function generateAIResponse(message) {
             const lowerMessage = message.toLowerCase();
             
+            // Get user profile for personalized responses
+            const userProfile = JSON.parse(localStorage.getItem('eduNavigatorProfile') || '{}');
+            const approach = userProfile.approach || 'public-school';
+            const grades = userProfile.grades || ['elementary'];
+            const experience = userProfile.experience || 'none';
+            
+            // Personalize responses based on user profile
+            let gradeLevel = 'elementary';
+            if (grades.includes('middle')) gradeLevel = 'middle school';
+            if (grades.includes('high')) gradeLevel = 'high school';
+            if (grades.includes('kindergarten')) gradeLevel = 'kindergarten';
+            
             // Handle ADHD-specific math lesson request
             if (lowerMessage.includes('create adhd-friendly math lesson')) {
-                return `<p>I'll create an ADHD-friendly math lesson for you. What grade level is your student?</p>
+                return `<p>I'll create an ADHD-friendly math lesson tailored for your ${gradeLevel} students using the ${approach.replace('-', ' ')} approach. What specific grade are you focusing on?</p>
                         <div class="response-options">
-                            <button class="response-button" onclick="handleQuickResponse('Kindergarten math')">Kindergarten</button>
-                            <button class="response-button" onclick="handleQuickResponse('Elementary math (1-3)')">Elementary (1-3)</button>
-                            <button class="response-button" onclick="handleQuickResponse('Upper Elementary math (4-5)')">Upper Elementary (4-5)</button>
-                            <button class="response-button" onclick="handleQuickResponse('Middle School math (6-8)')">Middle School (6-8)</button>
+                            ${grades.includes('kindergarten') ? '<button class="response-button" onclick="handleQuickResponse(\'Kindergarten math\')">Kindergarten</button>' : ''}
+                            ${grades.includes('elementary') ? '<button class="response-button" onclick="handleQuickResponse(\'Elementary math (1-3)\')">Elementary (1-3)</button>' : ''}
+                            ${grades.includes('elementary') ? '<button class="response-button" onclick="handleQuickResponse(\'Upper Elementary math (4-5)\')">Upper Elementary (4-5)</button>' : ''}
+                            ${grades.includes('middle') ? '<button class="response-button" onclick="handleQuickResponse(\'Middle School math (6-8)\')">Middle School (6-8)</button>' : ''}
+                            ${grades.includes('high') ? '<button class="response-button" onclick="handleQuickResponse(\'High School math (9-12)\')">High School (9-12)</button>' : ''}
                         </div>`;
             }
+            
+            // Customize standards based on approach
+            if (lowerMessage.includes('find') && lowerMessage.includes('standard')) {
+                let standardsMessage = '';
+                let standardsOptions = '';
+                
+                switch(approach) {
+                    case 'public-school':
+                        standardsMessage = 'I can help you find Common Core and state standards.';
+                        standardsOptions = `
+                            <button class="response-button" onclick="handleQuickResponse('Common Core math standards')">Common Core Math</button>
+                            <button class="response-button" onclick="handleQuickResponse('State science standards')">State Science Standards</button>
+                            <button class="response-button" onclick="handleQuickResponse('ELA standards')">ELA Standards</button>
+                        `;
+                        break;
+                    case 'montessori':
+                        standardsMessage = 'I can help you with Montessori scope and sequence guidelines.';
+                        standardsOptions = `
+                            <button class="response-button" onclick="handleQuickResponse('Montessori math progression')">Math Progression</button>
+                            <button class="response-button" onclick="handleQuickResponse('Montessori language materials')">Language Materials</button>
+                            <button class="response-button" onclick="handleQuickResponse('Practical life activities')">Practical Life</button>
+                        `;
+                        break;
+                    case 'waldorf':
+                        standardsMessage = 'I can guide you through Waldorf curriculum by grade.';
+                        standardsOptions = `
+                            <button class="response-button" onclick="handleQuickResponse('Waldorf grade curriculum')">Grade Curriculum</button>
+                            <button class="response-button" onclick="handleQuickResponse('Waldorf main lesson blocks')">Main Lesson Blocks</button>
+                            <button class="response-button" onclick="handleQuickResponse('Waldorf arts integration')">Arts Integration</button>
+                        `;
+                        break;
+                    case 'religious':
+                        standardsMessage = 'I can help you integrate faith-based standards with academics.';
+                        standardsOptions = `
+                            <button class="response-button" onclick="handleQuickResponse('Bible-integrated curriculum')">Bible Integration</button>
+                            <button class="response-button" onclick="handleQuickResponse('Character development standards')">Character Development</button>
+                            <button class="response-button" onclick="handleQuickResponse('Faith and academics')">Faith & Academics</button>
+                        `;
+                        break;
+                    default:
+                        standardsMessage = 'I can help you find appropriate learning objectives.';
+                        standardsOptions = `
+                            <button class="response-button" onclick="handleQuickResponse('Learning objectives')">Learning Objectives</button>
+                            <button class="response-button" onclick="handleQuickResponse('Skill progression')">Skill Progression</button>
+                            <button class="response-button" onclick="handleQuickResponse('Assessment criteria')">Assessment Criteria</button>
+                        `;
+                }
+                
+                return `<p>${standardsMessage} What type of standards are you looking for?</p>
+                        <div class="response-options">
+                            ${standardsOptions}
+                            <button class="response-button" onclick="handleQuickResponse('Custom standards')">Custom Standards</button>
+                        </div>`;
+            }
+            
+            // Adjust guidance based on experience level
+            if (lowerMessage.includes('create a lesson plan') || lowerMessage.includes('lesson plan')) {
+                let guidanceLevel = '';
+                
+                switch(experience) {
+                    case 'none':
+                        guidanceLevel = "Since you're new to teaching, I'll provide detailed step-by-step guidance with lots of examples and explanations.";
+                        break;
+                    case 'some':
+                        guidanceLevel = "With your teaching experience, I'll provide a structured template with key points and suggestions.";
+                        break;
+                    case 'expert':
+                    case 'administrator':
+                        guidanceLevel = "As an experienced educator, I'll provide a professional framework you can customize.";
+                        break;
+                    default:
+                        guidanceLevel = "I'll provide a comprehensive lesson structure you can adapt to your needs.";
+                }
+                
+                return `<p>${guidanceLevel}</p>
+                        <p>What subject would you like to create a lesson for?</p>
+                        <div class="response-options">
+                            <button class="response-button" onclick="handleQuickResponse('Math lesson')">Mathematics</button>
+                            <button class="response-button" onclick="handleQuickResponse('Science lesson')">Science</button>
+                            <button class="response-button" onclick="handleQuickResponse('ELA lesson')">Language Arts</button>
+                            <button class="response-button" onclick="handleQuickResponse('Social Studies lesson')">Social Studies</button>
+                        </div>`;
+            }
+            
+            // Default welcome that acknowledges their profile
+            return `<p>I understand you're using the ${approach.replace('-', ' ')} approach for ${gradeLevel} students. How can I help you create personalized curriculum today?</p>
+                    <ul style="margin: 12px 0;">
+                        <li>Creating lesson plans aligned with your philosophy</li>
+                        <li>Finding appropriate resources and materials</li>
+                        <li>Implementing accommodations for special needs</li>
+                        <li>Designing assessments that match your approach</li>
+                    </ul>
+                    <div class="response-options">
+                        <button class="response-button" onclick="handleQuickResponse('Create a lesson plan')">Create Lesson Plan</button>
+                        <button class="response-button" onclick="handleQuickResponse('Find standards')">Find Standards</button>
+                        <button class="response-button" onclick="handleQuickResponse('Browse templates')">Browse Templates</button>
+                        <button class="response-button" onclick="handleQuickResponse('Get recommendations')">Get Recommendations</button>
+                    </div>`;
+        }
             
             // Handle grade selection for ADHD math
             if (lowerMessage.includes('math') && (lowerMessage.includes('kindergarten') || 
@@ -2141,6 +2672,10 @@
         
         // Curriculum Builder functionality
         function generateCurriculum() {
+            // Get user profile
+            const userProfile = JSON.parse(localStorage.getItem('eduNavigatorProfile') || '{}');
+            const approach = userProfile.approach || 'public-school';
+            
             const studentName = document.getElementById('student-name').value;
             const gradeLevel = document.getElementById('grade-level').value;
             const subject = document.getElementById('subject').value;
@@ -2158,12 +2693,155 @@
             // Show loading
             const previewDiv = document.getElementById('curriculum-preview');
             previewDiv.style.display = 'block';
-            previewDiv.innerHTML = '<p>Generating curriculum...</p>';
+            previewDiv.innerHTML = '<p>Generating curriculum based on your ' + approach.replace('-', ' ') + ' preferences...</p>';
             
             // Simulate API call
             setTimeout(() => {
-                // Generate content based on subject
+                // Generate content based on subject AND educational approach
                 let lessonTitle, standards, activities, accommodationsList;
+                
+                // Customize standards based on approach
+                switch(approach) {
+                    case 'public-school':
+                        standards = subject === 'Mathematics' ? 
+                            '<span class="standard-tag">NY-7.EE.4</span><span class="standard-tag">CCSS.MATH.7.EE.B.4</span>' :
+                            '<span class="standard-tag">NY-7.RL.3</span><span class="standard-tag">CCSS.ELA-LITERACY.RL.7.3</span>';
+                        break;
+                    case 'montessori':
+                        standards = '<span class="standard-tag">Montessori Scope</span><span class="standard-tag">Hands-On Materials</span>';
+                        break;
+                    case 'waldorf':
+                        standards = '<span class="standard-tag">Waldorf Grade ' + gradeLevel.charAt(0) + '</span><span class="standard-tag">Main Lesson Block</span>';
+                        break;
+                    case 'religious':
+                        standards = '<span class="standard-tag">Bible Integration</span><span class="standard-tag">Character Development</span>';
+                        break;
+                    case 'unschooling':
+                        standards = '<span class="standard-tag">Interest-Led</span><span class="standard-tag">Real-World Application</span>';
+                        break;
+                    default:
+                        standards = '<span class="standard-tag">Custom Standards</span>';
+                }
+                
+                // Generate activities based on approach
+                switch(approach) {
+                    case 'montessori':
+                        activities = `
+                            <li><strong>Preparation (5 min):</strong> Set up prepared environment</li>
+                            <li><strong>Three-Period Lesson (15 min):</strong> "This is..." "Show me..." "What is..."</li>
+                            <li><strong>Work Period (25 min):</strong> Self-directed exploration with materials</li>
+                            <li><strong>Grace & Courtesy (5 min):</strong> Clean-up and reflection</li>
+                        `;
+                        break;
+                    case 'waldorf':
+                        activities = `
+                            <li><strong>Circle Time (10 min):</strong> Movement, songs, and verses</li>
+                            <li><strong>Main Lesson (30 min):</strong> Story-based introduction</li>
+                            <li><strong>Artistic Activity (15 min):</strong> Drawing or handwork</li>
+                            <li><strong>Closing (5 min):</strong> Reflection and preview tomorrow</li>
+                        `;
+                        break;
+                    case 'unschooling':
+                        activities = `
+                            <li><strong>Interest Discovery (10 min):</strong> Student-led topic exploration</li>
+                            <li><strong>Real-World Connection (20 min):</strong> Practical application</li>
+                            <li><strong>Project Time (20 min):</strong> Hands-on investigation</li>
+                            <li><strong>Documentation (10 min):</strong> Journal or portfolio entry</li>
+                        `;
+                        break;
+                    default:
+                        activities = `
+                            <li><strong>Warm-up (5 min):</strong> Review and engage</li>
+                            <li><strong>Introduction (10 min):</strong> Present new concepts</li>
+                            <li><strong>Guided Practice (15 min):</strong> Work through examples</li>
+                            <li><strong>Independent Practice (15 min):</strong> Apply learning</li>
+                            <li><strong>Assessment (10 min):</strong> Check understanding</li>
+                            <li><strong>Closing (5 min):</strong> Summarize and preview</li>
+                        `;
+                }
+                
+                // Set lesson title based on subject and approach
+                if (approach === 'montessori') {
+                    lessonTitle = subject + ' Work Period';
+                } else if (approach === 'waldorf') {
+                    lessonTitle = subject + ' Main Lesson Block';
+                } else if (approach === 'unschooling') {
+                    lessonTitle = subject + ' Exploration';
+                } else {
+                    lessonTitle = subject === 'Mathematics' ? 'Understanding Mathematical Concepts' : 
+                                  subject === 'Science' ? 'Scientific Investigation' :
+                                  subject === 'English Language Arts' ? 'Language Arts Study' :
+                                  'Social Studies Exploration';
+                }
+                
+                // Update preview with actual content
+                previewDiv.innerHTML = `
+                    <h2>Generated Curriculum Preview</h2>
+                    <div class="curriculum-section">
+                        <h3>Lesson Plan: ${lessonTitle}</h3>
+                        <p><strong>Student:</strong> <span id="preview-student">${studentName}</span></p>
+                        <p><strong>Grade:</strong> <span id="preview-grade">${gradeLevel}</span></p>
+                        <p><strong>Subject:</strong> <span id="preview-subject">${subject}</span></p>
+                        <p><strong>Approach:</strong> ${approach.replace('-', ' ').charAt(0).toUpperCase() + approach.replace('-', ' ').slice(1)}</p>
+                        <p><strong>Standards:</strong></p>
+                        <div style="margin-left: 20px;">
+                            ${standards}
+                        </div>
+                    </div>
+                    
+                    ${accommodations.length > 0 ? `
+                    <div class="curriculum-section">
+                        <h3>${accommodations.join(', ')} Accommodations</h3>
+                        <ul>
+                            ${generateAccommodationsList(accommodations, approach)}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="curriculum-section">
+                        <h3>Lesson Activities</h3>
+                        <ol>
+                            ${activities}
+                        </ol>
+                    </div>
+                    
+                    <button class="sf-button sf-button-primary" onclick="downloadCurriculum()">Download PDF</button>
+                    <button class="sf-button sf-button-secondary" onclick="editCurriculum()">Edit Curriculum</button>
+                `;
+            }, 2000);
+        }
+        
+        // Function to generate accommodations based on approach
+        function generateAccommodationsList(accommodations, approach) {
+            let accommodationsList = '';
+            
+            if (accommodations.includes('ADHD')) {
+                if (approach === 'montessori') {
+                    accommodationsList += `
+                        <li>Freedom of movement within prepared environment</li>
+                        <li>Work cycle flexibility</li>
+                        <li>Hands-on materials for kinesthetic learning</li>
+                        <li>Individual work mats for defined space</li>
+                    `;
+                } else if (approach === 'waldorf') {
+                    accommodationsList += `
+                        <li>Rhythmic daily structure</li>
+                        <li>Movement integrated into lessons</li>
+                        <li>Artistic activities for focus</li>
+                        <li>Natural materials for sensory input</li>
+                    `;
+                } else {
+                    accommodationsList += `
+                        <li>Movement breaks every 15 minutes</li>
+                        <li>Chunked instructions</li>
+                        <li>Visual aids and organizers</li>
+                        <li>Fidget tools allowed</li>
+                    `;
+                }
+            }
+            
+            return accommodationsList || '<li>Standard accommodations based on needs</li>';
+        }
                 
                 switch(subject) {
                     case 'Mathematics':
@@ -2344,14 +3022,304 @@
         
         // Template functionality
         function useTemplate(templateElement) {
-            const exampleText = templateElement.querySelector('.prompt-template-example').textContent.trim();
+            // Get the template information
+            const templateTitle = templateElement.querySelector('.prompt-template-title').textContent;
+            const templateDescription = templateElement.querySelector('.prompt-template-description').textContent;
+            const templateExample = templateElement.querySelector('.prompt-template-example').textContent.trim();
             
-            // Switch to chat tab
-            const chatTab = document.querySelector('[onclick*="chat"]');
-            switchTab('chat', chatTab);
+            // Stay on the current tab and show template details
+            const activeTab = document.querySelector('.tab-content.active');
+            const contentArea = activeTab.querySelector('.sf-content') || activeTab;
             
-            // Insert template into chat
-            document.getElementById('chat-input').value = exampleText;
+            const templateDetailContent = `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Template: ${templateTitle}</h1>
+                    </div>
+                    <button class="sf-button sf-button-secondary" onclick="switchTab('prompt-templates', document.querySelector('[onclick*=prompt-templates]'))">Back to Templates</button>
+                </div>
+                
+                <div class="einstein-box">
+                    <h3>🧠 Einstein Template Assistant</h3>
+                    <p>This template will help you create a customized curriculum based on proven strategies for ${templateTitle.toLowerCase()}. You can customize it to match your specific needs.</p>
+                </div>
+                
+                <div class="sf-card">
+                    <div class="sf-card-header">Template Details</div>
+                    <div class="sf-card-body">
+                        <h4>Description</h4>
+                        <p>${templateDescription}</p>
+                        
+                        <h4 style="margin-top: 24px;">Template Structure</h4>
+                        <div style="background-color: #f4f6f9; padding: 16px; border-radius: 8px; margin-top: 12px;">
+                            <pre style="white-space: pre-wrap; font-family: monospace; font-size: 14px;">${templateExample}</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sf-card" style="margin-top: 16px;">
+                    <div class="sf-card-header">Customize Template</div>
+                    <div class="sf-card-body">
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Student Name</label>
+                            <input type="text" class="sf-form-input" id="template-student-name" placeholder="Enter student name">
+                        </div>
+                        
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Grade Level</label>
+                            <select class="sf-form-input" id="template-grade-level">
+                                <option>Select Grade</option>
+                                <option>Kindergarten</option>
+                                <option>1st Grade</option>
+                                <option>2nd Grade</option>
+                                <option>3rd Grade</option>
+                                <option>4th Grade</option>
+                                <option>5th Grade</option>
+                                <option>6th Grade</option>
+                                <option>7th Grade</option>
+                                <option>8th Grade</option>
+                            </select>
+                        </div>
+                        
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Specific Topic (Optional)</label>
+                            <input type="text" class="sf-form-input" id="template-topic" placeholder="e.g., Fractions, Photosynthesis">
+                        </div>
+                        
+                        <div class="sf-form-element">
+                            <label class="sf-form-label">Additional Requirements</label>
+                            <textarea class="sf-form-input" id="template-requirements" rows="3" placeholder="Any specific needs or customizations..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 24px;">
+                    <button class="sf-button sf-button-primary" onclick="generateFromTemplate('${templateTitle}')">Generate Curriculum</button>
+                    <button class="sf-button sf-button-secondary" onclick="useTemplateInChat('${templateTitle}')">Use in Einstein Chat</button>
+                    <button class="sf-button sf-button-secondary" onclick="goToCurriculumBuilder('${templateTitle}')">Open in Curriculum Builder</button>
+                </div>
+            `;
+            
+            contentArea.innerHTML = templateDetailContent;
+        }
+        
+        // Function to generate curriculum from template
+        function generateFromTemplate(templateTitle) {
+            // Show loading
+            const activeTab = document.querySelector('.tab-content.active');
+            const contentArea = activeTab.querySelector('.sf-content') || activeTab;
+            
+            const studentName = document.getElementById('template-student-name').value || 'Student';
+            const gradeLevel = document.getElementById('template-grade-level').value || '5th Grade';
+            const topic = document.getElementById('template-topic').value || 'Core Concepts';
+            
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <div class="page-header-title">
+                        <h1>Generated Curriculum</h1>
+                    </div>
+                    <button class="sf-button sf-button-secondary" onclick="switchTab('prompt-templates', document.querySelector('[onclick*=prompt-templates]'))">Back to Templates</button>
+                </div>
+                
+                <div style="text-align: center; padding: 40px;">
+                    <div class="einstein-thinking">
+                        Einstein is generating your curriculum
+                        <div class="thinking-dots">
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Simulate generation
+            setTimeout(() => {
+                let lessonContent = '';
+                
+                if (templateTitle.includes('ADHD')) {
+                    lessonContent = `
+                        <div class="curriculum-section">
+                            <h3>ADHD-Optimized Math Lesson: ${topic}</h3>
+                            <p><strong>Student:</strong> ${studentName}</p>
+                            <p><strong>Grade:</strong> ${gradeLevel}</p>
+                            <p><strong>Duration:</strong> 45 minutes (with breaks)</p>
+                        </div>
+                        
+                        <div class="curriculum-section">
+                            <h3>Lesson Structure</h3>
+                            <ol>
+                                <li><strong>Warm-up (5 min):</strong> Movement-based number game</li>
+                                <li><strong>Introduction (10 min):</strong> Visual presentation with manipulatives</li>
+                                <li><strong>Movement Break (3 min):</strong> Brain gym exercises</li>
+                                <li><strong>Guided Practice (10 min):</strong> Interactive problem-solving</li>
+                                <li><strong>Physical Activity (5 min):</strong> Math relay race</li>
+                                <li><strong>Independent Work (10 min):</strong> Modified worksheet with visuals</li>
+                                <li><strong>Cool-down (2 min):</strong> Reflection and celebration</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="curriculum-section">
+                            <h3>ADHD Accommodations</h3>
+                            <ul>
+                                <li>Chunked instructions with visual cues</li>
+                                <li>Fidget tools available during work time</li>
+                                <li>Standing desk option</li>
+                                <li>Reduced problem sets (quality over quantity)</li>
+                                <li>Immediate feedback and praise</li>
+                            </ul>
+                        </div>
+                    `;
+                } else if (templateTitle.includes('Dyslexia')) {
+                    lessonContent = `
+                        <div class="curriculum-section">
+                            <h3>Dyslexia-Friendly Reading Lesson</h3>
+                            <p><strong>Student:</strong> ${studentName}</p>
+                            <p><strong>Grade:</strong> ${gradeLevel}</p>
+                            <p><strong>Method:</strong> Orton-Gillingham Approach</p>
+                        </div>
+                        
+                        <div class="curriculum-section">
+                            <h3>Lesson Components</h3>
+                            <ol>
+                                <li><strong>Phonemic Awareness (10 min):</strong> Sound identification games</li>
+                                <li><strong>Phonics (15 min):</strong> Letter-sound correspondence</li>
+                                <li><strong>Syllable Study (10 min):</strong> Breaking words into parts</li>
+                                <li><strong>Reading Practice (10 min):</strong> Decodable text with support</li>
+                                <li><strong>Comprehension (10 min):</strong> Oral discussion and visualization</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="curriculum-section">
+                            <h3>Dyslexia Accommodations</h3>
+                            <ul>
+                                <li>Large, dyslexia-friendly font (Arial or Comic Sans)</li>
+                                <li>Colored overlays or background</li>
+                                <li>Text-to-speech technology available</li>
+                                <li>Extra time for reading tasks</li>
+                                <li>Oral responses accepted</li>
+                            </ul>
+                        </div>
+                    `;
+                } else {
+                    lessonContent = `
+                        <div class="curriculum-section">
+                            <h3>Lesson Plan: ${topic}</h3>
+                            <p><strong>Student:</strong> ${studentName}</p>
+                            <p><strong>Grade:</strong> ${gradeLevel}</p>
+                            <p><strong>Standards:</strong> NY State Learning Standards</p>
+                        </div>
+                        
+                        <div class="curriculum-section">
+                            <h3>Lesson Activities</h3>
+                            <ol>
+                                <li><strong>Opening (5 min):</strong> Review previous learning</li>
+                                <li><strong>Introduction (10 min):</strong> Present new concepts</li>
+                                <li><strong>Guided Practice (15 min):</strong> Work through examples together</li>
+                                <li><strong>Independent Practice (15 min):</strong> Student works independently</li>
+                                <li><strong>Assessment (5 min):</strong> Quick check for understanding</li>
+                            </ol>
+                        </div>
+                    `;
+                }
+                
+                contentArea.innerHTML = `
+                    <div class="page-header">
+                        <div class="page-header-title">
+                            <h1>Generated Curriculum</h1>
+                        </div>
+                        <div>
+                            <button class="sf-button sf-button-primary" onclick="downloadGeneratedCurriculum()">Download PDF</button>
+                            <button class="sf-button sf-button-secondary" onclick="editInCurriculumBuilder()">Edit in Builder</button>
+                            <button class="sf-button sf-button-secondary" onclick="switchTab('prompt-templates', document.querySelector('[onclick*=prompt-templates]'))">Back to Templates</button>
+                        </div>
+                    </div>
+                    
+                    <div class="einstein-box">
+                        <h3>✨ Curriculum Generated Successfully!</h3>
+                        <p>Your customized curriculum based on the ${templateTitle} template is ready. You can download it, edit it further, or create additional lessons.</p>
+                    </div>
+                    
+                    ${lessonContent}
+                `;
+            }, 2000);
+        }
+        
+        // Function to use template in chat
+        function useTemplateInChat(templateTitle) {
+            // Get the template example
+            const templates = {
+                'ADHD Elementary Math': 'Create a 3rd grade math lesson on multiplication for a student with ADHD. Include movement breaks every 15 minutes, visual aids, and hands-on manipulatives. Align with Common Core standard CCSS.MATH.CONTENT.3.OA.A.1.',
+                'Dyslexia Reading Support': 'Design a 4th grade reading lesson for a student with dyslexia. Use Orton-Gillingham approach, include phonemic awareness activities, and provide text-to-speech accommodations. Must align with NY state reading standards.',
+                'NY State Standards Template': 'Create a lesson plan aligned with New York State Learning Standards for [GRADE] [SUBJECT]. Include Next Generation Learning Standards and ensure all activities meet NYSED requirements.'
+            };
+            
+            const templateText = templates[templateTitle] || '';
+            
+            // Switch to chat tab - find the Einstein Chat nav item
+            const chatTab = document.querySelector('.sf-nav-item:nth-child(5)'); // Einstein Chat is the 5th item
+            if (chatTab) {
+                switchTab('chat', chatTab);
+                
+                // Insert template into chat after a short delay to ensure tab has switched
+                setTimeout(() => {
+                    const chatInput = document.getElementById('chat-input');
+                    if (chatInput) {
+                        chatInput.value = templateText;
+                    }
+                }, 100);
+            }
+        }
+        
+        // Function to go to curriculum builder
+        function goToCurriculumBuilder(templateTitle) {
+            // Switch to curriculum builder tab - find the correct nav item
+            const builderTab = document.querySelector('.sf-nav-item:nth-child(3)'); // Curriculum Builder is the 3rd item
+            if (builderTab) {
+                switchTab('curriculum-builder', builderTab);
+                
+                // Pre-populate based on template type after a short delay
+                setTimeout(() => {
+                    if (templateTitle.includes('ADHD')) {
+                        document.getElementById('subject').value = 'Mathematics';
+                        document.getElementById('adhd').checked = true;
+                    } else if (templateTitle.includes('Dyslexia')) {
+                        document.getElementById('subject').value = 'English Language Arts';
+                        document.getElementById('dyslexia').checked = true;
+                    }
+                }, 100);
+            }
+        }
+        
+        // Function to download generated curriculum
+        function downloadGeneratedCurriculum() {
+            const curriculumContent = document.querySelector('.einstein-box').nextElementSibling.innerHTML;
+            
+            // Create a blob and download
+            const blob = new Blob([curriculumContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'generated-curriculum.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Curriculum has been downloaded successfully!');
+        }
+        
+        // Function to edit in curriculum builder
+        function editInCurriculumBuilder() {
+            // Switch to curriculum builder with pre-populated data
+            const builderTab = document.querySelector('[onclick*="curriculum-builder"]');
+            switchTab('curriculum-builder', builderTab);
+            
+            // Generate curriculum automatically
+            setTimeout(() => {
+                generateCurriculum();
+            }, 500);
         }
         
         // Helper functions
@@ -2656,17 +3624,78 @@
             alert('Curriculum plan has been downloaded successfully!');
         }
         
-        // Enter key support for chat
-        document.addEventListener('DOMContentLoaded', () => {
-            const chatInput = document.getElementById('chat-input');
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        sendChatMessage();
-                    }
-                });
+        // Function to view user profile
+        function viewUserProfile() {
+            const userProfile = JSON.parse(localStorage.getItem('eduNavigatorProfile') || '{}');
+            
+            if (!userProfile.approach) {
+                alert('No profile found. Please complete the setup process.');
+                showOnboarding();
+                return;
             }
-        });
+            
+            const approachNames = {
+                'public-school': 'Public School Standards',
+                'private-school': 'Private School Standards',
+                'religious': 'Religious Education',
+                'montessori': 'Montessori Method',
+                'waldorf': 'Waldorf/Steiner',
+                'unschooling': 'Unschooling',
+                'special-interest': 'Special Interest',
+                'other': 'Custom Approach'
+            };
+            
+            const experienceNames = {
+                'none': 'No Teaching Experience',
+                'some': 'Some Experience',
+                'expert': 'Expert',
+                'administrator': 'Administrator',
+                'paraprofessional': 'Paraprofessional',
+                'other-role': 'Other Role',
+                'na': 'None of the above'
+            };
+            
+            const profileModal = document.createElement('div');
+            profileModal.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 24px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                max-width: 500px;
+                z-index: 10000;
+            `;
+            
+            profileModal.innerHTML = `
+                <h2>Your EduNavigator Profile</h2>
+                <div style="margin-top: 20px;">
+                    <p><strong>Educational Approach:</strong> ${approachNames[userProfile.approach]}</p>
+                    <p><strong>Grade Levels:</strong> ${userProfile.grades.join(', ')}</p>
+                    <p><strong>Experience Level:</strong> ${experienceNames[userProfile.experience]}</p>
+                    <p><strong>Profile Created:</strong> ${new Date(userProfile.timestamp).toLocaleDateString()}</p>
+                </div>
+                <button class="sf-button sf-button-primary" style="margin-top: 20px;" onclick="this.parentElement.remove()">Close</button>
+            `;
+            
+            document.body.appendChild(profileModal);
+        }
+        
+        // Function to edit user profile
+        function editUserProfile() {
+            localStorage.removeItem('eduNavigatorProfile');
+            showOnboarding();
+        }
+        
+        // Function to reset user profile
+        function resetUserProfile() {
+            if (confirm('Are you sure you want to reset your profile? This will restart the setup process.')) {
+                localStorage.removeItem('eduNavigatorProfile');
+                window.location.reload();
+            }
+        }
     </script>
 </body>
 </html>
