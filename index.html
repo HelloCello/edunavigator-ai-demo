@@ -673,6 +673,7 @@
         	100% { opacity: 0.3; transform: translateY(0); }
     	}
 	</style>
+
 </head>
 <body>
 	<!-- Student Profile Modal -->
@@ -941,32 +942,35 @@
                     	<p style="margin-bottom: 16px;">Choose your educational approach.</p>
                    	 
                     	<div class="sf-form-element">
-                        	<label class="sf-form-label">Educational System Type</label>
-                        	<select class="sf-form-input" id="edu-system" onchange="updateSystemInfo()">
-                            	<option value="">Select System</option>
-                            	<optgroup label="State Standards">
-                                	<option value="ca-standards">California State Standards</option>
-                                	<option value="ny-standards">New York State Standards</option>
-                                	<option value="tx-standards">Texas State Standards (TEKS)</option>
-                                	<option value="fl-standards">Florida State Standards</option>
-                            	</optgroup>
-                            	<optgroup label="Educational Philosophies">
-                                	<option value="montessori">Montessori Method</option>
-                                	<option value="waldorf">Waldorf/Steiner Education</option>
-                                	<option value="classical">Classical Education</option>
-                            	</optgroup>
-                            	<optgroup label="Religious Education">
-                                	<option value="catholic">Catholic School</option>
-                                	<option value="christian">Christian School</option>
-                                	<option value="jewish">Jewish Day School</option>
-                            	</optgroup>
-                            	<optgroup label="International">
-                                	<option value="ib">International Baccalaureate (IB)</option>
-                                	<option value="british">British Curriculum</option>
-                            	</optgroup>
-                        	</select>
-                    	</div>
-
+	<label class="sf-form-label">Educational System Type</label>
+	<select class="sf-form-input" id="edu-system" onchange="updateSystemInfo()">
+    	<option value="">Select System</option>
+    	<optgroup label="State Standards">
+        	<option value="ca-standards">California State Standards</option>
+        	<option value="ny-standards">New York State Standards</option>
+        	<option value="tx-standards">Texas State Standards (TEKS)</option>
+        	<option value="fl-standards">Florida State Standards</option>
+    	</optgroup>
+    	<optgroup label="Educational Philosophies">
+        	<option value="montessori">Montessori Method</option>
+        	<option value="waldorf">Waldorf/Steiner Education</option>
+        	<option value="classical">Classical Education</option>
+    	</optgroup>
+    	<optgroup label="Religious Education">
+        	<option value="catholic">Catholic School</option>
+        	<option value="christian">Christian School</option>
+        	<option value="jewish">Jewish Day School</option>
+    	</optgroup>
+    	<optgroup label="International">
+        	<option value="ib">International Baccalaureate (IB)</option>
+        	<option value="british">British Curriculum</option>
+    	</optgroup>
+    	<optgroup label="Other">
+        	<option value="tbd">TBD</option>
+        	<option value="consultation">I would like an EduNav consultation to help me choose</option>
+    	</optgroup>
+	</select>
+</div>
                     	<div id="system-details" style="display: none; margin-top: 24px;">
                         	<div class="einstein-box">
                             	<h3 id="system-name">Selected System</h3>
@@ -1404,74 +1408,82 @@
 
     	// EduSpace system selection
     	function updateSystemInfo() {
-        	const select = document.getElementById('edu-system');
-        	const value = select.value;
-        	const detailsDiv = document.getElementById('system-details');
-        	const continueBtn = document.getElementById('eduspace-continue-btn');
-       	 
-        	if (value) {
-            	const systemInfo = {
-                	'ca-standards': {
-                    	name: 'California State Standards',
-                    	description: 'California State Board of Education adopted standards for K-12 education.'
-                	},
-                	'ny-standards': {
-                    	name: 'New York State Learning Standards',
-                    	description: 'NYS Next Generation Learning Standards for all subjects.'
-                	},
-                	'tx-standards': {
-                    	name: 'Texas State Standards (TEKS)',
-                    	description: 'State standards for Texas public schools.'
-                	},
-                	'fl-standards': {
-                    	name: 'Florida State Standards',
-                    	description: 'Florida academic standards for K-12 education.'
-                	},
-                	'montessori': {
-                    	name: 'Montessori Method',
-                    	description: 'Child-centered educational approach based on scientific observations.'
-                	},
-                	'waldorf': {
-                    	name: 'Waldorf/Steiner Education',
-                    	description: 'Holistic approach emphasizing imagination and creativity.'
-                	},
-                	'classical': {
-                    	name: 'Classical Education',
-                    	description: 'Traditional liberal arts education with trivium and quadrivium.'
-                	},
-                	'catholic': {
-                    	name: 'Catholic School Standards',
-                    	description: 'Academic excellence integrated with Catholic faith and values.'
-                	},
-                	'christian': {
-                    	name: 'Christian School Standards',
-                    	description: 'Biblical worldview integrated with rigorous academics.'
-                	},
-                	'jewish': {
-                    	name: 'Jewish Day School',
-                    	description: 'Dual curriculum of secular and Judaic studies.'
-                	},
-                	'ib': {
-                    	name: 'International Baccalaureate',
-                    	description: 'International education framework developing inquiring, knowledgeable young people.'
-                	},
-                	'british': {
-                    	name: 'British Curriculum',
-                    	description: 'UK National Curriculum adapted for international schools.'
-                	}
-            	};
-           	 
-            	if (systemInfo[value]) {
-                	document.getElementById('system-name').textContent = systemInfo[value].name;
-                	document.getElementById('system-description').textContent = systemInfo[value].description;
-                	detailsDiv.style.display = 'block';
-                	continueBtn.disabled = false;
-            	}
-        	} else {
-            	detailsDiv.style.display = 'none';
-            	continueBtn.disabled = true;
-        	}
-    	}
+    const select = document.getElementById('edu-system');
+    const value = select.value;
+    const detailsDiv = document.getElementById('system-details');
+    const continueBtn = document.getElementById('eduspace-continue-btn');
+    
+    if (value) {
+        const systemInfo = {
+            'ca-standards': {
+                name: 'California State Standards',
+                description: 'California State Board of Education adopted standards for K-12 education.'
+            },
+            'ny-standards': {
+                name: 'New York State Learning Standards',
+                description: 'NYS Next Generation Learning Standards for all subjects.'
+            },
+            'tx-standards': {
+                name: 'Texas State Standards (TEKS)',
+                description: 'State standards for Texas public schools.'
+            },
+            'fl-standards': {
+                name: 'Florida State Standards',
+                description: 'Florida academic standards for K-12 education.'
+            },
+            'montessori': {
+                name: 'Montessori Method',
+                description: 'Child-centered educational approach based on scientific observations.'
+            },
+            'waldorf': {
+                name: 'Waldorf/Steiner Education',
+                description: 'Holistic approach emphasizing imagination and creativity.'
+            },
+            'classical': {
+                name: 'Classical Education',
+                description: 'Traditional liberal arts education with trivium and quadrivium.'
+            },
+            'catholic': {
+                name: 'Catholic School Standards',
+                description: 'Academic excellence integrated with Catholic faith and values.'
+            },
+            'christian': {
+                name: 'Christian School Standards',
+                description: 'Biblical worldview integrated with rigorous academics.'
+            },
+            'jewish': {
+                name: 'Jewish Day School',
+                description: 'Dual curriculum of secular and Judaic studies.'
+            },
+            'ib': {
+                name: 'International Baccalaureate',
+                description: 'International education framework developing inquiring, knowledgeable young people.'
+            },
+            'british': {
+                name: 'British Curriculum',
+                description: 'UK National Curriculum adapted for international schools.'
+            },
+            'tbd': {
+                name: 'TBD (To Be Determined)',
+                description: 'Educational approach to be determined. EduNavigator will help with standards alignment based on your student\'s needs.'
+            },
+            'consultation': {
+                name: 'EduNavigator Consultation',
+                description: 'Our education specialists will help you select the most appropriate educational approach for your student\'s unique needs and goals.'
+            }
+        };
+        
+        if (systemInfo[value]) {
+            document.getElementById('system-name').textContent = systemInfo[value].name;
+            document.getElementById('system-description').textContent = systemInfo[value].description;
+            detailsDiv.style.display = 'block';
+            continueBtn.disabled = false;
+        }
+    } else {
+        detailsDiv.style.display = 'none';
+        continueBtn.disabled = true;
+    }
+}
 
     	function saveSystemAndContinue() {
         	const system = document.getElementById('edu-system').value;
@@ -1909,38 +1921,205 @@
         	}
     	}
 
-    	function sendSuggestion(suggestion) {
-        	const input = document.getElementById('chat-input');
-        	input.value = suggestion;
-        	sendMessage();
-    	}
+    	// Updated sendSuggestion function with error handling
+function sendSuggestion(suggestion) {
+    try {
+        console.log("Suggestion clicked:", suggestion); // Debug log
+        
+        // Set the input value
+        const input = document.getElementById('chat-input');
+        if (!input) {
+            console.error("Chat input element not found");
+            return;
+        }
+        
+        // Set the input value to the suggestion text
+        input.value = suggestion;
+        
+        // Add user message to the chat (ensures the user message appears)
+        addUserMessage(suggestion);
+        
+        // Clear the input
+        input.value = '';
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Process the suggestion with a small delay
+        setTimeout(() => {
+            try {
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Generate Einstein's response based on the suggestion
+                processEinsteinSuggestionResponse(suggestion);
+            } catch (error) {
+                console.error("Error processing suggestion:", error);
+                removeTypingIndicator();
+                
+                // Show fallback error message
+                const messagesDiv = document.getElementById('chat-messages');
+                if (messagesDiv) {
+                    // Create fallback message element
+                    const errorElement = document.createElement('div');
+                    errorElement.className = 'chat-message einstein';
+                    errorElement.innerHTML = `
+                        <div class="chat-avatar einstein">🧠</div>
+                        <div class="chat-bubble einstein">
+                            <p>I apologize, but I encountered an error processing your suggestion.</p>
+                            <p>Please try typing your request directly or select a different suggestion.</p>
+                        </div>
+                    `;
+                    
+                    // Add to chat and scroll
+                    messagesDiv.appendChild(errorElement);
+                    messagesDiv.scrollTop = errorElement.offsetTop - 20;
+                }
+            }
+        }, 1000);
+    } catch (error) {
+        console.error("Error in sendSuggestion:", error);
+        alert("Error processing suggestion. Please try again.");
+    }
+}
+
+// New function to process suggestion responses separately from regular chat
+function processEinsteinSuggestionResponse(suggestion) {
+    const messagesDiv = document.getElementById('chat-messages');
+    if (!messagesDiv) return;
+    
+    // Extract relevant keywords from the suggestion
+    const lowercaseSuggestion = suggestion.toLowerCase();
+    let response = '';
+    
+    // Get context from user profile for better suggestion handling
+    const currentStudent = userProfile.currentStudent;
+    const educationalSystem = userProfile.educationalSystem;
+    
+    // Process different types of suggestions
+    if (lowercaseSuggestion.includes('create') && lowercaseSuggestion.includes('lesson')) {
+        if (currentStudent) {
+            response = handleLessonCreation(currentStudent, educationalSystem);
+        } else {
+            response = "To create a personalized lesson plan, let's first set up a student profile. Would you like to add a student now?";
+        }
+    } 
+    else if (lowercaseSuggestion.includes('generate') && lowercaseSuggestion.includes('assessment')) {
+        if (currentStudent) {
+            response = handleAssessmentGeneration(currentStudent, educationalSystem);
+        } else {
+            response = "I'd be happy to help generate assessment materials. To make them more relevant, let's first set up a student profile. Would you like to do that now?";
+        }
+    }
+    else if (lowercaseSuggestion.includes('accommodation')) {
+        if (currentStudent && currentStudent.accommodations && currentStudent.accommodations.length > 0) {
+            response = handleDifferentiation(currentStudent, educationalSystem);
+        } else {
+            response = "I can provide differentiation strategies for various learning needs. Do you have specific accommodations in mind for your student?";
+        }
+    }
+    else if (lowercaseSuggestion.includes('curriculum') || lowercaseSuggestion.includes('planning')) {
+        if (educationalSystem) {
+            if (currentStudent) {
+                response = handleCurriculumRequest(currentStudent, educationalSystem);
+            } else {
+                response = `I can help with curriculum planning for your ${getSystemName(educationalSystem)} approach. What grade level and subject would you like to focus on?`;
+            }
+        } else {
+            response = "I'd be happy to help with curriculum planning. To get started, what educational system or approach are you using?";
+        }
+    }
+    else if (lowercaseSuggestion.includes('strategy') || lowercaseSuggestion.includes('strategies')) {
+        response = `Here are some teaching strategies that might be helpful:
+
+**Direct Instruction Strategies:**
+• Clear learning objectives
+• Explicit modeling of skills
+• Guided practice with feedback
+• Independent practice
+
+**Active Learning Strategies:**
+• Think-pair-share discussions
+• Collaborative problem-solving
+• Student-led demonstrations
+• Project-based learning
+
+**Assessment Strategies:**
+• Exit tickets for quick formative assessment
+• Student self-assessment rubrics
+• Peer feedback protocols
+• Portfolio assessment
+
+Would you like me to elaborate on any of these teaching approaches?`;
+    }
+    else {
+        // Default response for other suggestions
+        response = `I'd be happy to help with "${suggestion}". Could you provide a bit more detail about what specific aspect you're interested in?`;
+    }
+    
+    // Format the response
+    let formattedResponse = response;
+    try {
+        formattedResponse = formatResponseText(response);
+    } catch (error) {
+        console.error("Error formatting suggestion response:", error);
+    }
+    
+    // Create and add the message element
+    const newMessageElement = document.createElement('div');
+    newMessageElement.className = 'chat-message einstein';
+    newMessageElement.innerHTML = `
+        <div class="chat-avatar einstein">🧠</div>
+        <div class="chat-bubble einstein">${formattedResponse}</div>
+    `;
+    
+    // Add to chat and scroll
+    messagesDiv.appendChild(newMessageElement);
+    messagesDiv.scrollTop = newMessageElement.offsetTop - 20;
+}
 
     	function addUserMessage(message) {
-        	const messagesDiv = document.getElementById('chat-messages');
-        	messagesDiv.innerHTML += `
-            	<div class="chat-message user">
-                	<div class="chat-avatar user">👤</div>
-                	<div class="chat-bubble user">${message}</div>
-            	</div>
-        	`;
-        	messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    	}
+    const messagesDiv = document.getElementById('chat-messages');
+    
+    // Create message element
+    const userMessageElement = document.createElement('div');
+    userMessageElement.className = 'chat-message user';
+    userMessageElement.innerHTML = `
+        <div class="chat-avatar user">👤</div>
+        <div class="chat-bubble user">${message}</div>
+    `;
+    
+    // Add to DOM
+    messagesDiv.appendChild(userMessageElement);
+    
+    // Calculate and set scroll position
+    const messagePosition = userMessageElement.offsetTop - 20;
+    messagesDiv.scrollTop = messagePosition;
+}
 
     	function showTypingIndicator() {
-        	const messagesDiv = document.getElementById('chat-messages');
-        	messagesDiv.innerHTML += `
-            	<div class="chat-message einstein" id="typing-indicator">
-                	<div class="chat-avatar einstein">🧠</div>
-                	<div class="typing-indicator">
-                    	<div class="typing-dot"></div>
-                    	<div class="typing-dot"></div>
-                    	<div class="typing-dot"></div>
-                	</div>
-            	</div>
-        	`;
-        	messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    	}
-
+    const messagesDiv = document.getElementById('chat-messages');
+    
+    // Create indicator element
+    const indicatorElement = document.createElement('div');
+    indicatorElement.className = 'chat-message einstein';
+    indicatorElement.id = 'typing-indicator';
+    indicatorElement.innerHTML = `
+        <div class="chat-avatar einstein">🧠</div>
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    `;
+    
+    // Add to DOM
+    messagesDiv.appendChild(indicatorElement);
+    
+    // Calculate and set scroll position
+    const indicatorPosition = indicatorElement.offsetTop - 20;
+    messagesDiv.scrollTop = indicatorPosition;
+}
     	function removeTypingIndicator() {
         	const indicator = document.getElementById('typing-indicator');
         	if (indicator) {
@@ -1949,82 +2128,9 @@
     	}
 
     	// First add these two new helper functions
-function formatResponseText(text) {
-    if (!text) return '';
-    
-    // Split text into paragraphs
-    let paragraphs = text.split('\n\n');
-    
-    // Process each paragraph
-    let formattedHtml = '';
-    
-    for (let i = 0; i < paragraphs.length; i++) {
-        let paragraph = paragraphs[i].trim();
-        
-        if (!paragraph) continue; // Skip empty paragraphs
-        
-        // Handle bullet lists (lines starting with • or - or *)
-        if (paragraph.includes('\n• ') || paragraph.includes('\n- ') || paragraph.includes('\n* ')) {
-            // Split into lines
-            let lines = paragraph.split('\n');
-            let inList = false;
-            
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) continue;
-                
-                // Check if this is a list item
-                if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
-                    // Start a list if not already in one
-                    if (!inList) {
-                        formattedHtml += '<ul style="margin-left: 20px; margin-bottom: 12px;">';
-                        inList = true;
-                    }
-                    // Add list item
-                    let itemContent = line.substring(2).trim();
-                    formattedHtml += `<li>${formatInlineText(itemContent)}</li>`;
-                } else {
-                    // End list if we were in one
-                    if (inList) {
-                        formattedHtml += '</ul>';
-                        inList = false;
-                    }
-                    // Regular paragraph line
-                    formattedHtml += `<p>${formatInlineText(line)}</p>`;
-                }
-            }
-            
-            // Close any open list
-            if (inList) {
-                formattedHtml += '</ul>';
-            }
-        } 
-        // Handle headings (lines with ** at beginning and end)
-        else if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-            let headingText = paragraph.substring(2, paragraph.length - 2);
-            formattedHtml += `<h3 style="margin-bottom: 8px; color: #0070d2;">${headingText}</h3>`;
-        }
-        // Handle standard paragraphs
-        else {
-            formattedHtml += `<p style="margin-bottom: 12px;">${formatInlineText(paragraph)}</p>`;
-        }
-    }
-    
-    return formattedHtml;
-}
-
-function formatInlineText(text) {
-    // Format bold text (enclosed in **)
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Format italic text (enclosed in single *)
-    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    return text;
-}
-
-// Then implement the original function with just minimal changes
-function addEinsteinResponse(userMessage) {
+// Enhanced formatting functions for better responsiveness
+// Updated addEinsteinResponse function with proper scrolling behavior
+function addEinsteinResponse(userMessage){
     try {
         const messagesDiv = document.getElementById('chat-messages');
         let response = '';
@@ -2120,7 +2226,7 @@ ${students.map((student, index) =>
 Once you tell me which student, I can provide targeted assistance based on their grade level and your ${getSystemName(educationalSystem)} curriculum.`;
         }
 
-        // Format the response - here's the key change
+        // Format the response
         let formattedResponse;
         try {
             formattedResponse = formatResponseText(response);
@@ -2129,123 +2235,139 @@ Once you tell me which student, I can provide targeted assistance based on their
             formattedResponse = response; // Fallback to unformatted text
         }
         
-        messagesDiv.innerHTML += `
-            <div class="chat-message einstein">
-                <div class="chat-avatar einstein">🧠</div>
-                <div class="chat-bubble einstein">${formattedResponse}</div>
-            </div>
+        // Create a new message element
+        const newMessageElement = document.createElement('div');
+        newMessageElement.className = 'chat-message einstein';
+        newMessageElement.innerHTML = `
+            <div class="chat-avatar einstein">🧠</div>
+            <div class="chat-bubble einstein">${formattedResponse}</div>
         `;
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        // Add to DOM
+        messagesDiv.appendChild(newMessageElement);
+        
+        // Calculate position to scroll to (top of the new message minus a small margin)
+        const newMessagePosition = newMessageElement.offsetTop - 20;
+        
+        // Scroll to show the beginning of the message
+        messagesDiv.scrollTop = newMessagePosition;
         
     } catch (error) {
         console.error('Error in addEinsteinResponse:', error);
-        // Provide a fallback response
+        // Fallback response
         const messagesDiv = document.getElementById('chat-messages');
-        messagesDiv.innerHTML += `
-            <div class="chat-message einstein">
-                <div class="chat-avatar einstein">🧠</div>
-                <div class="chat-bubble einstein">I understand you need help with: "${userMessage}". Let me provide you with some guidance. What specific aspect would you like me to focus on?</div>
+        
+        // Create message element
+        const errorElement = document.createElement('div');
+        errorElement.className = 'chat-message einstein';
+        errorElement.innerHTML = `
+            <div class="chat-avatar einstein">🧠</div>
+            <div class="chat-bubble einstein">
+                <p>I understand you need help with: "${userMessage}".</p>
+                <p>Let me provide you with some guidance. What specific aspect would you like me to focus on?</p>
             </div>
         `;
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        // Add to DOM and scroll properly
+        messagesDiv.appendChild(errorElement);
+        messagesDiv.scrollTop = errorElement.offsetTop - 20;
     }
 }
-
 // New formatting function to convert plain text to properly formatted HTML
 function formatResponseText(text) {
-    if (!text) return '';
+	if (!text) return '';
     
-    // Split text into paragraphs
-    let paragraphs = text.split('\n\n');
+	// Split text into paragraphs
+	let paragraphs = text.split('\n\n');
     
-    // Process each paragraph
-    let formattedHtml = '';
+	// Process each paragraph
+	let formattedHtml = '';
     
-    for (let i = 0; i < paragraphs.length; i++) {
-        let paragraph = paragraphs[i].trim();
-        
-        if (!paragraph) continue; // Skip empty paragraphs
-        
-        // Handle bullet lists (lines starting with • or - or *)
-        if (paragraph.includes('\n• ') || paragraph.includes('\n- ') || paragraph.includes('\n* ')) {
-            // Split into lines
-            let lines = paragraph.split('\n');
-            let inList = false;
-            
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) continue;
-                
-                // Check if this is a list item
-                if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
-                    // Start a list if not already in one
-                    if (!inList) {
-                        formattedHtml += '<ul style="margin-left: 20px; margin-bottom: 12px;">';
-                        inList = true;
-                    }
-                    // Add list item
-                    let itemContent = line.substring(2).trim();
-                    
-                    // Handle nested lists (indented bullets)
-                    if (itemContent.includes('\n  • ') || itemContent.includes('\n  - ') || itemContent.includes('\n  * ')) {
-                        let nestedItems = itemContent.split(/\n\s{2}[•\-*] /);
-                        let mainItem = nestedItems[0];
-                        formattedHtml += `<li>${formatInlineText(mainItem)}`;
-                        
-                        if (nestedItems.length > 1) {
-                            formattedHtml += '<ul style="margin-left: 20px; margin-top: 6px;">';
-                            for (let j = 1; j < nestedItems.length; j++) {
-                                formattedHtml += `<li>${formatInlineText(nestedItems[j])}</li>`;
-                            }
-                            formattedHtml += '</ul>';
-                        }
-                        
-                        formattedHtml += '</li>';
-                    } else {
-                        formattedHtml += `<li>${formatInlineText(itemContent)}</li>`;
-                    }
-                } else {
-                    // End list if we were in one
-                    if (inList) {
-                        formattedHtml += '</ul>';
-                        inList = false;
-                    }
-                    // Regular paragraph line
-                    formattedHtml += `<p>${formatInlineText(line)}</p>`;
-                }
-            }
-            
-            // Close any open list
-            if (inList) {
-                formattedHtml += '</ul>';
-            }
-        } 
-        // Handle headings (lines with ** at beginning and end, or starting with #)
-        else if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-            let headingText = paragraph.substring(2, paragraph.length - 2);
-            formattedHtml += `<h3 style="margin-bottom: 8px; color: #0070d2;">${headingText}</h3>`;
-        }
-        // Handle standard paragraphs
-        else {
-            formattedHtml += `<p style="margin-bottom: 12px;">${formatInlineText(paragraph)}</p>`;
-        }
-    }
+	for (let i = 0; i < paragraphs.length; i++) {
+    	let paragraph = paragraphs[i].trim();
+   	 
+    	if (!paragraph) continue; // Skip empty paragraphs
+   	 
+    	// Handle bullet lists (lines starting with • or - or *)
+    	if (paragraph.includes('\n• ') || paragraph.includes('\n- ') || paragraph.includes('\n* ')) {
+        	// Split into lines
+        	let lines = paragraph.split('\n');
+        	let inList = false;
+       	 
+        	for (let line of lines) {
+            	line = line.trim();
+            	if (!line) continue;
+           	 
+            	// Check if this is a list item
+            	if (line.startsWith('• ') || line.startsWith('- ') || line.startsWith('* ')) {
+                	// Start a list if not already in one
+                	if (!inList) {
+                    	formattedHtml += '<ul style="margin-left: 20px; margin-bottom: 12px;">';
+                    	inList = true;
+                	}
+                	// Add list item
+                	let itemContent = line.substring(2).trim();
+               	 
+                	// Handle nested lists (indented bullets)
+                	if (itemContent.includes('\n  • ') || itemContent.includes('\n  - ') || itemContent.includes('\n  * ')) {
+                    	let nestedItems = itemContent.split(/\n\s{2}[•\-*] /);
+                    	let mainItem = nestedItems[0];
+                    	formattedHtml += `<li>${formatInlineText(mainItem)}`;
+                   	 
+                    	if (nestedItems.length > 1) {
+                        	formattedHtml += '<ul style="margin-left: 20px; margin-top: 6px;">';
+                        	for (let j = 1; j < nestedItems.length; j++) {
+                            	formattedHtml += `<li>${formatInlineText(nestedItems[j])}</li>`;
+                        	}
+                        	formattedHtml += '</ul>';
+                    	}
+                   	 
+                    	formattedHtml += '</li>';
+                	} else {
+                    	formattedHtml += `<li>${formatInlineText(itemContent)}</li>`;
+                	}
+            	} else {
+                	// End list if we were in one
+                	if (inList) {
+                    	formattedHtml += '</ul>';
+                    	inList = false;
+                	}
+                	// Regular paragraph line
+                	formattedHtml += `<p>${formatInlineText(line)}</p>`;
+            	}
+        	}
+       	 
+        	// Close any open list
+        	if (inList) {
+            	formattedHtml += '</ul>';
+        	}
+    	}
+    	// Handle headings (lines with ** at beginning and end, or starting with #)
+    	else if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
+        	let headingText = paragraph.substring(2, paragraph.length - 2);
+        	formattedHtml += `<h3 style="margin-bottom: 8px; color: #0070d2;">${headingText}</h3>`;
+    	}
+    	// Handle standard paragraphs
+    	else {
+        	formattedHtml += `<p style="margin-bottom: 12px;">${formatInlineText(paragraph)}</p>`;
+    	}
+	}
     
-    return formattedHtml;
+	return formattedHtml;
 }
 
 // Format inline text elements like bold, italic, etc.
 function formatInlineText(text) {
-    // Format bold text (enclosed in **)
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+	// Format bold text (enclosed in **)
+	text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
-    // Format italic text (enclosed in single *)
-    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+	// Format italic text (enclosed in single *)
+	text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
     
-    // Format code or technical terms (enclosed in backticks)
-    text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+	// Format code or technical terms (enclosed in backticks)
+	text = text.replace(/`(.*?)`/g, '<code>$1</code>');
     
-    return text;
+	return text;
 }
    	 
     	// Handler functions for common suggestion patterns
@@ -3311,3 +3433,5 @@ What specific aspect would you like help with?`;
 	</script>
 </body>
 </html>
+
+
